@@ -1,0 +1,26 @@
+{
+  "name": "discord-modmail",
+  "version": "1.0",
+  "description": "JavaScript modmail bot with rich features.",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "discord.js": "^12.2.0",
+    "quick.db": "^7.1.1",
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "repository": {
+    "url": "https://github.com/Cyanic76/discord-modmail"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "glitch",
+    "express"
+  ]
+}
