@@ -1,4 +1,4 @@
-# Discord.JS Modmail
+# Discord.JS 12 Modmail
 A modmail with rich features.
 
 ## Features
