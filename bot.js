@@ -49,7 +49,7 @@ client.on("message", async message => {
         .setColor(colors.success).setAuthor(author.tag, author.avatarURL())
         .setDescription(`Ticket #${actualticket} created.\nUser: ${author}\nID: ${author.id}`)
         .setFooter(`${moment(new Date()).format("lll")}`)
-      await client.channels.cache.get(channel.id).send(newChannel);
+      await client.channels.cache.get(channel.id).send({embed:newChannel});
       var toSendAsNew = `Hello ${author.username}, your ticket #${actualticket} has been created.`;
       const newTicket = toSendAsNew;
 	  message.author.send(newTicket)
