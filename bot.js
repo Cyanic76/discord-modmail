@@ -164,7 +164,7 @@ client.on("message", async message => {
     if(message.content.toLowerCase() === `${config.prefix}complete`){
         var embed = new Discord.MessageEmbed()
         .setDescription(`Deleting this thread in **10** seconds...\n:lock: This thread has been locked and closed.`)
-        .setColor("YELLOW").setTimestamp()
+        .setColor("RED").setTimestamp()
         message.channel.send({embed: embed})
         var timeout = 10000
         setTimeout(() => {end();}, timeout)
@@ -176,7 +176,7 @@ client.on("message", async message => {
         return supportUser.send(`Your ticket #${actualticket} has been closed! Thanks for contacting us. If you wish to open a new ticket, feel free to message me.`)
       }
     };
-  }
-})
+  };
+});
 
 client.login(process.env.TOKEN); // Log the bot in
