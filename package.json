@@ -19,8 +19,6 @@
   },
   "license": "MIT",
   "keywords": [
-    "node",
-    "glitch",
-    "express"
+    "node"
   ]
 }
