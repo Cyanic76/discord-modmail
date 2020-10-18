@@ -5,6 +5,11 @@ const config = require("./config.json");
 // declare the client
 const client = new Discord.Client();
 
+// do something when the bot is logged in
+client.on("ready", () => {
+  console.log(`Successfully logged in as ${client.user.tag}.`)
+})
+
 client.on("message", async message => {
   if(message.channel.type === "dm"){
     if(message.author.bot) return;
@@ -23,7 +28,7 @@ client.on("message", async message => {
     if(!active || !found){
       active = {};
       let modrole = guild.roles.cache.get(config.roles.mod);
-      let everyone = guild.roles.cache.get(guild.defaultRole.id); // not sure if this works
+      let everyone = guild.roles.cache.get(guild.roles.everyone.id);
       let bot = guild.roles.cache.get(config.roles.bot);
       await table.add("ticket", 1)
       let actualticket = await table.get("ticket");
@@ -46,13 +51,11 @@ client.on("message", async message => {
       })
       let author = message.author;
       const newChannel = new Discord.MessageEmbed()
-        .setColor(colors.success).setAuthor(author.tag, author.avatarURL())
+        .setColor("BLUE").setAuthor(author.tag, author.avatarURL())
         .setDescription(`Ticket #${actualticket} created.\nUser: ${author}\nID: ${author.id}`)
-        .setFooter(`${moment(new Date()).format("lll")}`)
+        .setTimestamp()
       await client.channels.cache.get(channel.id).send({embed:newChannel});
-      var toSendAsNew = `Hello ${author.username}, your ticket #${actualticket} has been created.`;
-      const newTicket = toSendAsNew;
-	  message.author.send(newTicket)
+      message.author.send(`Hello ${author.username}, your ticket #${actualticket} has been created.`)
       active.channelID = channel.id;
       active.targetID = author.id;
     }
@@ -120,11 +123,11 @@ client.on("message", async message => {
       if(isPause === true || isPause === "true") return message.channel.send("Ticket already paused.")
       await table.set(`suspended${support.targetID}`, true);
       var suspend = new Discord.MessageEmbed()
-      .setDescription("⏸️ This thread has been **locked** and **suspended**. Do `b!continue` to cancel.")
+      .setDescription(`⏸️ This thread has been **locked** and **suspended**. Do \`${config.prefix}continue\` to cancel.`)
       .setTimestamp()
-      .setColor(colors.yellow)
+      .setColor("YELLOW")
       message.channel.send({embed: suspend});
-	  return supportUser.send("Your ticket has been paused. We'll send you a message when we're ready to continue.")
+      return supportUser.send("Your ticket has been paused. We'll send you a message when we're ready to continue.")
     };
     
     // continue a thread
@@ -134,7 +137,7 @@ client.on("message", async message => {
       await table.delete(`suspended${support.targetID}`);
       var c = new Discord.MessageEmbed()
       .setDescription("▶️ This thread has been **unlocked**.")
-      .setColor(colors.success).setTimestamp()
+      .setColor("BLUE").setTimestamp()
       message.channel.send({embed: c});
       return supportUser.send("Hi! Your ticket isn't paused anymore and we're ready to continue.");
     }
@@ -144,10 +147,8 @@ client.on("message", async message => {
       var args = message.content.split(" ").slice(1)
       let isBlock = await table.get(`isBlocked${support.targetID}`);
       if(isBlock === true) return message.channel.send("User is already blocked")
-      let reason = args.join(" ");
-	    if(!reason || reason === "" || reason === " " || reason === undefined) reason = "Unspecified."
       await table.set(`isBlocked${support.targetID}`, true);
-      return message.channel.send(`<:tick1:588568490496098307> This user has been blocked from using the modmail. Close the ticket with \`${config.prefix}complete\`.\nReason: ${reason}`)
+      return message.channel.send(`<:tick1:588568490496098307> This user has been blocked from using the modmail. Close the ticket with \`${config.prefix}complete\`.`)
     }
     
     // unblock a user
@@ -155,8 +156,6 @@ client.on("message", async message => {
       let isBlock = await table.get(`isBlocked${support.targetID}`);
       if(isBlock === false || !isBlock || isBlock === null) return message.channel.send("User wasn't blocked")
       var args = message.content.split(" ").slice(1)
-      let reason = args.join(" ");
-      if(!reason || reason === "" || reason === " " || reason === undefined) reason = "Unspecified."
       await table.delete(`isBlocked${support.targetID}`);
       return message.channel.send(`<:tick1:588568490496098307> This user has been unblocked from using the modmail.`)
     }
@@ -165,7 +164,7 @@ client.on("message", async message => {
     if(message.content.toLowerCase() === `${config.prefix}complete`){
         var embed = new Discord.MessageEmbed()
         .setDescription(`Deleting this thread in **10** seconds...\n:lock: This thread has been locked and closed.`)
-        .setColor(colors.red).setTimestamp()
+        .setColor("YELLOW").setTimestamp()
         message.channel.send({embed: embed})
         var timeout = 10000
         setTimeout(() => {end();}, timeout)
@@ -174,10 +173,10 @@ client.on("message", async message => {
         table.delete(`support_${support.targetID}`)
         let actualticket = await table.get("ticket");
         message.channel.delete()
-        return supportUser.send(`Hello again! Your ticket #${actualticket} has been labelled as complete. Thanks for contacting us. If you wish to open a new ticket, feel free to message me.`)
+        return supportUser.send(`Your ticket #${actualticket} has been closed! Thanks for contacting us. If you wish to open a new ticket, feel free to message me.`)
       }
     };
   }
 })
 
-client.login(config.token);
+client.login(process.env.TOKEN); // Log the bot in
