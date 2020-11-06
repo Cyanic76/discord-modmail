@@ -1,4 +1,4 @@
-# Discord.JS 12 Modmail
+# Discord.JS 12.4.1 Modmail
 A modmail with rich features.
 
 ## Features
@@ -16,12 +16,12 @@ The bot will only send mods' messages to the user if mods use `reply`/`areply` c
 ## Installation
 1. [Clone this repo](https://github.com/Cyanic76/discord-modmail/archive/master.zip)
 2. Install NPM/Node
-3. Run `npm install discord.js` (it'll automatically install 12.2.0 version)
+3. Run `npm install discord.js` (it'll automatically install the latest version)
 4. Run `npm install quick.db`
 5. Start your bot.
 
 ## Needed Node modules/plugins
-- `discord.js^12.2.0`, the core plugin.
+- `discord.js^12.4.1`, the core plugin.
 - `quick.db^7.1.1`, the database plugin.
 
 [View in package.json](https://github.com/Cyanic76/discord-modmail/blob/master/package.json#L9)
