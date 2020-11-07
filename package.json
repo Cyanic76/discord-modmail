@@ -9,7 +9,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "discord.js": "^12.4.1",
-    "quick.db": "^7.1.1"
+    "quick.db": "^7.1.2"
   },
   "engines": {
     "node": "12.x"

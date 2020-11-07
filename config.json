@@ -1,5 +1,6 @@
 {
 	"guild": "Your support server ID goes here",
+	"log": "Your modmail log channel ID",
 	"prefix": "!",
 	"roles": {
 		"bot": "Your bot role ID",

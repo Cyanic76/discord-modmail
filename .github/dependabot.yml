@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: "daily"
     commit-message:
-      prefix: "Dependency > "
+      prefix: "Dependency: "
     assignees:
       - "Cyanic76"
     target-branch: "master"
