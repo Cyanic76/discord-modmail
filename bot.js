@@ -76,8 +76,8 @@ client.on("message", async message => {
     } else {
       channel.send(`${message.author.username} > ${whatWeWant}`);
     }
-    table.set(`support_${message.author.id}`, active);
-    table.set(`supportChannel_${channel.id}`, message.author.id);
+    await table.set(`support_${message.author.id}`, active);
+    await table.set(`supportChannel_${channel.id}`, message.author.id);
     return;
   }
   if(message.author.bot) return;
