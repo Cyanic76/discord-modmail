@@ -20,13 +20,8 @@ client.on("message", async message => {
     let channel, found = true;
     let user = await table.get(`isBlocked${message.author.id}`);
     if(user === true || user === "true") return message.react("❌");
-    try {
-      if(active) client.channels.cache.get(active.channelID).guild;
-    } catch (e) {
-      found = false;
-    }
-    if(!active || !found){
-      active = {};
+    if(!active || active === null){
+      active = {é};
       let modrole = guild.roles.cache.get(config.roles.mod);
       let everyone = guild.roles.cache.get(guild.roles.everyone.id);
       let bot = guild.roles.cache.get(config.roles.bot);
