@@ -20,12 +20,7 @@ client.on("message", async message => {
     let channel, found = true;
     let user = await table.get(`isBlocked${message.author.id}`);
     if(user === true || user === "true") return message.react("❌");
-    try {
-      if(active) client.channels.cache.get(active.channelID).guild;
-    } catch (e) {
-      found = false;
-    }
-    if(!active || !found){
+    if(active === null){
       active = {};
       let modrole = guild.roles.cache.get(config.roles.mod);
       let everyone = guild.roles.cache.get(guild.roles.everyone.id);
@@ -69,15 +64,15 @@ client.on("message", async message => {
     }
     channel = client.channels.cache.get(active.channelID);
     var msg = message.content;
-    //var whatWeWant = msg.replace("@everyone", "[everyone]").replace("@here", `[here]`) // idk if that's useful since we're blocking mentions
+    var whatWeWant = msg.replace("@everyone", "[everyone]").replace("@here", `[here]`) // idk if that's useful since we're blocking mentions
     if(message.attachments.size > 0){
       let attachment = new Discord.MessageAttachment(message.attachments.first().url)
       channel.send(`${message.author.username} > ${whatWeWant}`, {files: [message.attachments.first().url]})
     } else {
       channel.send(`${message.author.username} > ${whatWeWant}`);
     }
-    table.set(`support_${message.author.id}`, active);
-    table.set(`supportChannel_${channel.id}`, message.author.id);
+    await table.set(`support_${message.author.id}`, active);
+    await table.set(`supportChannel_${channel.id}`, message.author.id);
     return;
   }
   if(message.author.bot) return;
@@ -151,16 +146,15 @@ client.on("message", async message => {
     
     // block a user
     if(message.content.startsWith(`${config.prefix}block`)){
-      var args = message.content.split(" ").slice(1)
+    var args = message.content.split(" ").slice(1)
 	  let reason = args.join(" ");
 	  if(!reason) reason = `Unspecified.`
 	  let user = client.users.fetch(`${support.targetID}`); // djs want a string here
-	  const newTicket = new Discord.MessageEmbed()
-		.setColor("RED").setAuthor(user.tag, user.avatarURL({dynamic: true}))
+	  const blocked = new Discord.MessageEmbed()
+		.setColor("RED").setAuthor(user.tag)
 		.setTitle("User blocked")
-		.addField("Ticket no.", actualticket, true)
-		.addField("Channel", `<#${channel.id}>`, true)
-		.addField("Reason", reason, false)
+		.addField("Channel", `<#${message.channel.id}>`, true)
+		.addField("Reason", reason, true)
 	  if(config.logs){
 	    client.channels.cache.get(config.log).send({embed: blocked})
 	  }
@@ -179,13 +173,11 @@ client.on("message", async message => {
       let isBlock = await table.get(`isBlocked${support.targetID}`);
       if(isBlock === false || !isBlock || isBlock === null) return message.channel.send("User wasn't blocked")
       let user = client.users.fetch(`${support.targetID}`); // djs want a string here
-	  const newTicket = new Discord.MessageEmbed()
-		.setColor("RED").setAuthor(user.tag, user.avatarURL({dynamic: true}))
+	  const unBlock = new Discord.MessageEmbed()
+		.setColor("RED").setAuthor(user.tag)
 		.setTitle("User unblocked")
-		.addField("Ticket no.", actualticket, true)
-		.addField("Channel", `<#${channel.id}>`, true)
 	  if(config.logs){
-	    client.channels.cache.get(config.log).send({embed: blocked})
+	    client.channels.cache.get(config.log).send({embed: unBlock})
 	  }
       await table.delete(`isBlocked${support.targetID}`);
       var c = new Discord.MessageEmbed()
@@ -211,25 +203,6 @@ client.on("message", async message => {
         return supportUser.send(`Your ticket #${actualticket} has been closed! If you wish to open a new ticket, feel free to message me.`)
       }
     };
-  };
-});
-
-// haven't thought of that before but if you wanna unblock a user now you can do so from everywhere as long as you have the support role
-client.on("message", async msg => {
-  if(msg.content.startsWith(`${config.prefix}unblock`)){
-	var args = message.content.split(" ").slice(1)
-	try {
-	  let user = client.users.fetch(`${support.targetID}`); // djs want a string here.
-	} catch(e) {
-	  if(e){
-		msg.channel.send("That user doesn't exist, or the ID belongs to a channel, a role, a message or a server.")
-	  }
-	}
-	if(msg.author.roles.has(config.roles.mod)){
-	  unblock(id);
-	  msg.channel.send(`${user.username}#${user.discriminator} has been unblocked.`)
-	}
-  }
 })
 
 async function unblock(id){
