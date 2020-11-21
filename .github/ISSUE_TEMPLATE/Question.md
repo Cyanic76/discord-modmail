@@ -1,6 +1,10 @@
-| name | about | title | labels | assignees |
-| ---- | ----- | ----- | ------ | --------- |
-| Question | Ask a question | [Q] | |
+---
+name: Question
+about: Ask questions.
+title: "[Q]: [QUESTIONS]"
+labels:
+assignees:
+---
 
 **What's your question ?**
 
