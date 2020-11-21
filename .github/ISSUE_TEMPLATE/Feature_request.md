@@ -1,6 +1,10 @@
-| name | about | title | labels | assignees |
-| ---- | ----- | ----- | ------ | --------- |
-| Feature request | Ask for a new feature! | [FR] | |
+---
+name: New feature
+about: Got an idea for a new feature?
+title: "[FR]: [FEATURE NAME]"
+labels: feature request
+assignees:
+---
 
 **Is your feature request related to a problem?**
 
