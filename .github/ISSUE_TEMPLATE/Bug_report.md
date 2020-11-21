@@ -1,6 +1,10 @@
-| name | about | title | labels | assignees |
-| ---- | ----- | ----- | ------ | --------- |
-| Bug report | Report bugs to help me improve the project | [BUG] | |
+---
+name: Bug reports
+about: Report bugs to improve this project.
+title: "[BUG]: [BUG NAME]"
+labels: 
+assignees: 
+---
 
 **Describe the bug**
 
