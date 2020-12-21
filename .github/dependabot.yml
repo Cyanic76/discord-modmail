@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "Dependency: "
+    assignees:
+      - "Cyanic76"
+    target-branch: "master"
+    
