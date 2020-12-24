@@ -65,6 +65,13 @@ client.on("message", async message => {
     channel = client.channels.cache.get(active.channelID);
     var msg = message.content;
     var whatWeWant = msg.replace("@everyone", "[everyone]").replace("@here", `[here]`) // idk if that's useful since we're blocking mentions
+    // fix (#6)
+    var isPaused = await table.get(`suspended${message.author.id}`);
+    var isBlocked = await table.get(`isBlocked${message.author.id}`);
+    if(isPaused === true){
+    	return message.channel.send("Sorry, but your ticket is currently paused. I'll message you back when the support team unpause it.")
+    }
+    if(isBlocked === true) return; // the user is blocked, so we're just gonna move on.
     if(message.attachments.size > 0){
       let attachment = new Discord.MessageAttachment(message.attachments.first().url)
       channel.send(`${message.author.username} > ${whatWeWant}`, {files: [message.attachments.first().url]})
