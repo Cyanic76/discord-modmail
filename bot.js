@@ -84,11 +84,9 @@ client.on("message", async message => {
   }
   if(message.author.bot) return;
   var table = new db.table("Tickets");
-  let support = await table.get(`supportChannel_${message.channel.id}`);
+  var support = await table.get(`supportChannel_${message.channel.id}`);
   if(support){
-    support = await table.get(`support_${support}`);
-    var user = new db.table(`Language`);
-    let lang = await user.get(`U${support.targetID}`);
+    var support = await table.get(`support_${support}`);
     let supportUser = client.users.cache.get(support.targetID);
     if(!supportUser) return message.channel.delete();
     
@@ -98,7 +96,7 @@ client.on("message", async message => {
       let isBlock = await table.get(`isBlocked${support.targetID}`);
       if(isPause === true) return message.channel.send("This ticket already paused. Unpause it to continue.")
       if(isBlock === true) return message.channel.send("The user is blocked. Unblock them to continue or close the ticket.")
-	  var args = message.content.split(" ").slice(1)
+      var args = message.content.split(" ").slice(1)
       let msg = args.join(" ");
       message.react("✅");
       if(message.attachments.size > 0){
@@ -201,10 +199,10 @@ client.on("message", async message => {
         .setColor("RED").setTimestamp()
         message.channel.send({embed: embed})
         var timeout = 10000
-        setTimeout(() => {end();}, timeout)
+        setTimeout(() => {end(support.targetID);}, timeout)
       }
-      async function end(){
-        table.delete(`support_${support.targetID}`)
+      async function end(userID){
+        table.delete(`support_${userID}`);
         let actualticket = await table.get("ticket");
         message.channel.delete()
         return supportUser.send(`Your ticket #${actualticket} has been closed! If you wish to open a new ticket, feel free to message me.`)
