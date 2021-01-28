@@ -146,7 +146,7 @@ client.on("message", async message => {
       .setDescription("▶️ This thread has been **unlocked**.")
       .setColor("BLUE").setTimestamp()
       message.channel.send({embed: c});
-      return client.users.cache.get(support.targetID).("Hi! Your ticket isn't paused anymore. We're ready to continue!");
+      return client.users.cache.get(support.targetID).send("Hi! Your ticket isn't paused anymore. We're ready to continue!");
     }
     
     // block a user
