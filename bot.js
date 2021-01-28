@@ -28,7 +28,7 @@ client.on("message", async message => {
       await table.add("ticket", 1)
       let actualticket = await table.get("ticket");
       channel = await guild.channels.create(`${message.author.username}-${message.author.discriminator}`, { type: 'text', reason: `Modmail created ticket #${actualticket}.` });
-      channel.setParent("571299988471152690");
+      channel.setParent(config.ticketCategory);
       channel.setTopic(`#${actualticket} (Open) | ${config.prefix}complete to close this ticket | Modmail for ${message.author.username}`)
       channel.createOverwrite(modrole, {
         VIEW_CHANNEL: true,
@@ -46,10 +46,10 @@ client.on("message", async message => {
       })
       let author = message.author;
 	  const newTicket = new Discord.MessageEmbed()
-		.setColor("GREEN").setAuthor(author.tag, author.avatarURL({dynamic: true}))
-		.setTitle("New ticket created")
-		.addField("Ticket no.", actualticket, true)
-		.addField("Channel", `<#${channel.id}>`, true)
+	    .setColor("GREEN").setAuthor(author.tag, author.avatarURL({dynamic: true}))
+	    .setTitle("New ticket created")
+	    .addField("Ticket no.", actualticket, true)
+	    .addField("Channel", `<#${channel.id}>`, true)
 	  if(config.logs){
 	    client.channels.cache.get(config.log).send({embed: newTicket})
 	  }
