@@ -134,7 +134,7 @@ client.on("message", async message => {
       .setTimestamp()
       .setColor("YELLOW")
       message.channel.send({embed: suspend});
-      return supportUser.send("Your ticket has been paused. We'll send you a message when we're ready to continue.")
+      return client.users.cache.get(support.targetID).send("Your ticket has been paused. We'll send you a message when we're ready to continue.")
     };
     
     // continue a thread
@@ -146,7 +146,7 @@ client.on("message", async message => {
       .setDescription("▶️ This thread has been **unlocked**.")
       .setColor("BLUE").setTimestamp()
       message.channel.send({embed: c});
-      return supportUser.send("Hi! Your ticket isn't paused anymore. We're ready to continue!");
+      return client.users.cache.get(support.targetID).("Hi! Your ticket isn't paused anymore. We're ready to continue!");
     }
     
     // block a user
@@ -205,7 +205,7 @@ client.on("message", async message => {
         table.delete(`support_${userID}`);
         let actualticket = await table.get("ticket");
         message.channel.delete()
-        return supportUser.send(`Your ticket #${actualticket} has been closed! If you wish to open a new ticket, feel free to message me.`)
+        return client.users.cache.get(support.targetID).send(`Your ticket #${actualticket} has been closed! If you wish to open a new ticket, feel free to message me.`)
       }
     };
 })
