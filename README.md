@@ -24,9 +24,7 @@ A modmail with rich features.
 
 ## Needed Node modules/plugins
 - `discord.js^12.4.1`, the core plugin.
-- `quick.db^7.1.2`, the database plugin.
-
-[View in package.json](https://github.com/Cyanic76/discord-modmail/blob/master/package.json#L9)
+- `quick.db^7.1.3`, the database plugin.
 
 ## About
 
