@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const db = require("quick.db");
+var table = new db.table("Tickets");
 const config = require("./config.json");
 
 // declare the client
@@ -14,7 +15,6 @@ client.on("message", async message => {
   if(message.channel.type === "dm"){
     if(message.author.bot) return;
     if(message.content.includes("@everyone") || message.content.includes("@here")) return message.author.send("You may not use everyone/here mentions.")
-    var table = new db.table("Tickets");
     let active = await table.get(`support_${message.author.id}`)
     let guild = client.guilds.cache.get(config.guild);
     let channel, found = true;
@@ -167,30 +167,11 @@ client.on("message", async message => {
       if(isBlock === true) return message.channel.send("The user is already blocked.")
       await table.set(`isBlocked${support.targetID}`, true);
       var c = new Discord.MessageEmbed()
-      .setDescription("⏸️ The user can not use the modmail anymore; they have been blocked. You may now close the ticket or unblock them to continue.")
+      .setDescription("⏸️ The user has been blocked from the modmail. You may now close the ticket or unblock them to continue.")
       .setColor("RED").setTimestamp()
       message.channel.send({embed: c});
       return;
     }
-    
-    // unblock a user
-    if(message.content.startsWith(`${config.prefix}unblock`)){
-      let isBlock = await table.get(`isBlocked${support.targetID}`);
-      if(isBlock === false || !isBlock || isBlock === null) return message.channel.send("User wasn't blocked")
-      let user = client.users.fetch(`${support.targetID}`); // djs want a string here
-	  const unBlock = new Discord.MessageEmbed()
-		.setColor("RED").setAuthor(user.tag)
-		.setTitle("User unblocked")
-	  if(config.logs){
-	    client.channels.cache.get(config.log).send({embed: unBlock})
-	  }
-      await table.delete(`isBlocked${support.targetID}`);
-      var c = new Discord.MessageEmbed()
-      .setDescription("▶️ The user has successfully been unblocked!")
-      .setColor("BLUE").setTimestamp()
-      message.channel.send({embed: c});
-      return
-	}
     
     // complete
     if(message.content.toLowerCase() === `${config.prefix}complete`){
@@ -210,9 +191,25 @@ client.on("message", async message => {
     };
 })
 
-async function unblock(id){
-  let table = new db.table("Tickets");
-  await table.delete(`isBlocked${id}`);
-}
+client.on("message", async message => {
+  if(message.content.startsWith(`${config.prefix}unblock`){
+    if(message.guild.member(message.author).roles.cache.has(config.roles.mod)){
+      var args = message.content.split(" ").slice(1);
+      client.users.fetch(`${args[0]}`).then(user => {
+      	let data = await table.get(`isBlocked${args[0]}`);
+	if(data === true){
+	  await table.delete(`isBlocked${args[0]}`);
+          return message.channel.send(`Successfully unblocked ${user.username} (${user.id}) from the modmail service.`);
+	} else {
+	  return message.channel.send(`${user.username} (${user.id}) is not blocked from the modmail at the moment.`)
+	}
+      }).catch(err => {
+        if(err) return message.channel.send("Unknown user.");
+      })
+    } else {
+      return message.channel.send("You can not use that.");
+    }
+  }
+})
 
 client.login(process.env.TOKEN); // Log the bot in
