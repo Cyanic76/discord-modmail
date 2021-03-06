@@ -192,20 +192,20 @@ client.on("message", async message => {
 })
 
 client.on("message", async message => {
-  if(message.content.startsWith(`${config.prefix}unblock`){
+  if(message.content.startsWith(`${config.prefix}unblock`)){
     if(message.guild.member(message.author).roles.cache.has(config.roles.mod)){
       var args = message.content.split(" ").slice(1);
-      client.users.fetch(`${args[0]}`).then(user => {
+      client.users.fetch(`${args[0]}`).then(async user => {
       	let data = await table.get(`isBlocked${args[0]}`);
-	if(data === true){
-	  await table.delete(`isBlocked${args[0]}`);
-          return message.channel.send(`Successfully unblocked ${user.username} (${user.id}) from the modmail service.`);
-	} else {
-	  return message.channel.send(`${user.username} (${user.id}) is not blocked from the modmail at the moment.`)
-	}
-      }).catch(err => {
-        if(err) return message.channel.send("Unknown user.");
-      })
+        if(data === true){
+          await table.delete(`isBlocked${args[0]}`);
+                return message.channel.send(`Successfully unblocked ${user.username} (${user.id}) from the modmail service.`);
+        } else {
+          return message.channel.send(`${user.username} (${user.id}) is not blocked from the modmail at the moment.`)
+        }
+            }).catch(err => {
+              if(err) return message.channel.send("Unknown user.");
+            })
     } else {
       return message.channel.send("You can not use that.");
     }
