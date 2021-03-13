@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const db = require("quick.db");
-var table = new db.table("Tickets");
 const config = require("./config.json");
+const table = new db.table("Tickets");
 
 // declare the client
 const client = new Discord.Client();
