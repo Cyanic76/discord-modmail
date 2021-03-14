@@ -12,21 +12,23 @@ client.on("ready", () => {
 })
 
 client.on("message", async message => {
+  
   if(message.channel.type === "dm"){
+    const dbTable = new db.table("Tickets");
     if(message.author.bot) return;
     if(message.content.includes("@everyone") || message.content.includes("@here")) return message.author.send("You may not use everyone/here mentions.")
-    let active = await table.get(`support_${message.author.id}`)
+    let active = await dbTable.get(`support_${message.author.id}`)
     let guild = client.guilds.cache.get(config.guild);
     let channel, found = true;
-    let user = await table.get(`isBlocked${message.author.id}`);
+    let user = await dbTable.get(`isBlocked${message.author.id}`);
     if(user === true || user === "true") return message.react("❌");
     if(active === null){
       active = {};
       let modrole = guild.roles.cache.get(config.roles.mod);
       let everyone = guild.roles.cache.get(guild.roles.everyone.id);
       let bot = guild.roles.cache.get(config.roles.bot);
-      await table.add("ticket", 1)
-      let actualticket = await table.get("ticket");
+      await dbTable.add("ticket", 1)
+      let actualticket = await dbTable.get("ticket");
       channel = await guild.channels.create(`${message.author.username}-${message.author.discriminator}`, { type: 'text', reason: `Modmail created ticket #${actualticket}.` });
       channel.setParent(config.ticketCategory);
       channel.setTopic(`#${actualticket} (Open) | ${config.prefix}complete to close this ticket | Modmail for ${message.author.username}`)
