@@ -68,8 +68,8 @@ client.on("message", async message => {
     var msg = message.content;
     var whatWeWant = msg.replace("@everyone", "[everyone]").replace("@here", `[here]`) // idk if that's useful since we're blocking mentions
     // fix (#6)
-    var isPaused = await table.get(`suspended${message.author.id}`);
-    var isBlocked = await table.get(`isBlocked${message.author.id}`);
+    var isPaused = await dbTable.get(`suspended${message.author.id}`);
+    var isBlocked = await dbTable.get(`isBlocked${message.author.id}`);
     if(isPaused === true){
     	return message.channel.send("Sorry, but your ticket is currently paused. I'll message you back when the support team unpause it.")
     }
@@ -80,8 +80,8 @@ client.on("message", async message => {
     } else {
       channel.send(`${message.author.username} > ${whatWeWant}`);
     }
-    await table.set(`support_${message.author.id}`, active);
-    await table.set(`supportChannel_${channel.id}`, message.author.id);
+    await dbTable.set(`support_${message.author.id}`, active);
+    await dbTable.set(`supportChannel_${channel.id}`, message.author.id);
     return;
   }
   if(message.author.bot) return;
