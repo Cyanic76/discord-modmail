@@ -81,7 +81,7 @@ client.on("message", async message => {
       client.channels.cache.get(active.channelID).send(`${message.author.username} > ${whatWeWant}`);
     }
     await dbTable.set(`support_${message.author.id}`, active);
-    await dbTable.set(`supportChannel_${channel.id}`, message.author.id);
+    await dbTable.set(`supportChannel_${active.channelID}`, message.author.id);
     return;
   }
   if(message.author.bot) return;
