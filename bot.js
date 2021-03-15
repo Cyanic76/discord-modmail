@@ -76,9 +76,9 @@ client.on("message", async message => {
     if(isBlocked === true) return; // the user is blocked, so we're just gonna move on.
     if(message.attachments.size > 0){
       let attachment = new Discord.MessageAttachment(message.attachments.first().url)
-      channel.send(`${message.author.username} > ${whatWeWant}`, {files: [message.attachments.first().url]})
+      client.channels.cache.get(active.channelID).send(`${message.author.username} > ${whatWeWant}`, {files: [message.attachments.first().url]})
     } else {
-      channel.send(`${message.author.username} > ${whatWeWant}`);
+      client.channels.cache.get(active.channelID).send(`${message.author.username} > ${whatWeWant}`);
     }
     await dbTable.set(`support_${message.author.id}`, active);
     await dbTable.set(`supportChannel_${channel.id}`, message.author.id);
