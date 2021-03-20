@@ -9,6 +9,7 @@ const client = new Discord.Client();
 // do something when the bot is logged in
 client.on("ready", () => {
   console.log(`Successfully logged in as ${client.user.tag}.`)
+  console.log(`Guild ID: ${config.guild}\nLogs channel ID: ${config.log}\nPrefix: ${config.prefix}`)
 })
 
 client.on("message", async message => {
@@ -47,14 +48,14 @@ client.on("message", async message => {
         MANAGE_MESSAGES: true
       })
       let author = message.author;
-	  const newTicket = new Discord.MessageEmbed()
-	    .setColor("GREEN").setAuthor(author.tag, author.avatarURL({dynamic: true}))
-	    .setTitle("New ticket created")
-	    .addField("Ticket no.", actualticket, true)
-	    .addField("Channel", `<#${channel.id}>`, true)
-	  if(config.logs){
-	    client.channels.cache.get(config.log).send({embed: newTicket})
-	  }
+      const newTicket = new Discord.MessageEmbed()
+	.setColor("GREEN").setAuthor(author.tag, author.avatarURL({dynamic: true}))
+	.setTitle("New ticket created")
+	.addField("Ticket no.", actualticket, true)
+	.addField("Channel", `<#${channel.id}>`, true)
+      if(config.logs){
+	client.channels.cache.get(config.log).send({embed: newTicket})
+      }
       const newChannel = new Discord.MessageEmbed()
         .setColor("BLUE").setAuthor(author.tag, author.avatarURL())
         .setDescription(`Ticket #${actualticket} created.\nUser: ${author}\nID: ${author.id}`)
