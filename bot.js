@@ -30,9 +30,9 @@ client.on("message", async message => {
       let bot = guild.roles.cache.get(config.roles.bot);
       await dbTable.add("ticket", 1)
       let actualticket = await dbTable.get("ticket");
-      channel = await guild.channels.create(`${message.author.username}-${message.author.discriminator}`, { type: 'text', reason: `Modmail created ticket #${actualticket}.` });
+      channel = await guild.channels.create(`${message.author.username}-${message.author.discriminator}`, { type: 'text', reason: `New modmail thread: #${actualticket}.` });
       channel.setParent(config.ticketCategory);
-      channel.setTopic(`#${actualticket} (Open) | ${config.prefix}complete to close this ticket | Modmail for ${message.author.username}`)
+      channel.setTopic(`#${actualticket} | ${config.prefix}complete to close this ticket | Modmail for ${message.author.username}`)
       channel.createOverwrite(modrole, {
         VIEW_CHANNEL: true,
         SEND_MESSAGES: true,
@@ -61,13 +61,13 @@ client.on("message", async message => {
         .setDescription(`Ticket #${actualticket} created.\nUser: ${author}\nID: ${author.id}`)
         .setTimestamp()
       await client.channels.cache.get(channel.id).send({embed:newChannel});
-      message.author.send(`Hello ${author.username}, your ticket #${actualticket} has been created.`)
+      message.author.send(`Thanks for contacting us, ${author.username}! We'll get back to you soon.\nThe ticket #${actualticket} has been created.`)
       active.channelID = channel.id;
       active.targetID = author.id;
     }
     channel = client.channels.cache.get(active.channelID);
     var msg = message.content;
-    var whatWeWant = msg.replace("@everyone", "[everyone]").replace("@here", `[here]`) // idk if that's useful since we're blocking mentions
+    var text = msg.replace("@everyone", "[everyone]").replace("@here", `[here]`) // idk if that's useful since we're blocking mentions
     // fix (#6)
     var isPaused = await dbTable.get(`suspended${message.author.id}`);
     var isBlocked = await dbTable.get(`isBlocked${message.author.id}`);
@@ -77,9 +77,17 @@ client.on("message", async message => {
     if(isBlocked === true) return; // the user is blocked, so we're just gonna move on.
     if(message.attachments.size > 0){
       let attachment = new Discord.MessageAttachment(message.attachments.first().url)
-      client.channels.cache.get(active.channelID).send(`${message.author.username} > ${whatWeWant}`, {files: [message.attachments.first().url]})
+      try {
+      	client.channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`, {files: [message.attachments.first().url]})
+  	  } catch(e) {
+  	  	if(e) message.guild.channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`, {files: [message.attachments.first().url]})
+  	  }
     } else {
-      client.channels.cache.get(active.channelID).send(`${message.author.username} > ${whatWeWant}`);
+    	try {
+    		client.channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`);
+    	} catch(e) {
+    		if(e) message.guild.channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`)
+    	}
     }
     await dbTable.set(`support_${message.author.id}`, active);
     await dbTable.set(`supportChannel_${active.channelID}`, message.author.id);
@@ -189,7 +197,7 @@ client.on("message", async message => {
         table.delete(`support_${userID}`);
         let actualticket = await table.get("ticket");
         message.channel.delete()
-        return client.users.cache.get(support.targetID).send(`Your ticket #${actualticket} has been closed! If you wish to open a new ticket, feel free to message me.`)
+        return client.users.cache.get(support.targetID).send(`Thanks for getting in touch with us. If you wish to open a new ticket, feel free to message me.\nYour ticket #${actualticket} has been closed.`)
       }
     };
 })
@@ -215,4 +223,9 @@ client.on("message", async message => {
   }
 })
 
+/*
+   just in case:
+   the token should not be here.
+   the token should be in the 1st line of the process.env file instead.
+*/
 client.login(process.env.TOKEN); // Log the bot in
