@@ -53,14 +53,15 @@ client.on("message", async message => {
 	.setTitle("New ticket created")
 	.addField("Ticket no.", actualticket, true)
 	.addField("Channel", `<#${channel.id}>`, true)
+      let supportServer = client.guilds.cache.get(config.guild);
       if(config.logs){
-	client.channels.cache.get(config.log).send({embed: newTicket})
+	supportServer.channels.cache.get(config.log).send({embed: newTicket})
       }
       const newChannel = new Discord.MessageEmbed()
         .setColor("BLUE").setAuthor(author.tag, author.avatarURL())
         .setDescription(`Ticket #${actualticket} created.\nUser: ${author}\nID: ${author.id}`)
         .setTimestamp()
-      await client.channels.cache.get(channel.id).send({embed:newChannel});
+      await supportServer.channels.cache.get(channel.id).send({embed:newChannel});
       message.author.send(`Thanks for contacting us, ${author.username}! We'll get back to you soon.\nThe ticket #${actualticket} has been created.`)
       active.channelID = channel.id;
       active.targetID = author.id;
