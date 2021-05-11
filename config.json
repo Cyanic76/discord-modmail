@@ -4,7 +4,7 @@
 	"prefix": "!",
 	"roles": {
 		"bot": "Your bot role ID",
-		"mod": "Your moderator/support team role ID"
+		"mod": ["Your moderator/support team role ID"]
 	},
 	"ticketCategory": "Your support server's TICKET category ID"
 }
