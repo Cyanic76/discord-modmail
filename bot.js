@@ -17,7 +17,7 @@ client.on("message", async message => {
   if(message.channel.type === "dm"){
     const dbTable = new db.table("Tickets");
     if(message.author.bot) return;
-    if(message.content.includes("@everyone") || message.content.includes("@here")) return message.author.send("You may not use everyone/here mentions.")
+    if(message.content.includes("@everyone") || message.content.includes("@here")) return message.author.send("I'm sorry, but you can not use everyone/here mentions in a modmail thread.")
     let active = await dbTable.get(`support_${message.author.id}`)
     let guild = client.guilds.cache.get(config.guild);
     let channel, found = true;
@@ -25,19 +25,25 @@ client.on("message", async message => {
     if(user === true || user === "true") return message.react("❌");
     if(active === null){
       active = {};
-      let modrole = guild.roles.cache.get(config.roles.mod);
       let everyone = guild.roles.cache.get(guild.roles.everyone.id);
       let bot = guild.roles.cache.get(config.roles.bot);
       await dbTable.add("ticket", 1)
       let actualticket = await dbTable.get("ticket");
       channel = await guild.channels.create(`${message.author.username}-${message.author.discriminator}`, { type: 'text', reason: `New modmail thread: #${actualticket}.` });
       channel.setParent(config.ticketCategory);
-      channel.setTopic(`#${actualticket} | ${config.prefix}complete to close this ticket | Modmail for ${message.author.username}`)
-      channel.createOverwrite(modrole, {
-        VIEW_CHANNEL: true,
-        SEND_MESSAGES: true,
-        READ_MESSAGE_HISTORY: true
-      });
+      channel.setTopic(`#${actualticket} | Use ${config.prefix}complete to close this ticket | ${message.author.username}'s ticket`)
+      config.roles.mod.forEach(moderator => {
+      	let modrole = guild.roles.cache.get(config.roles.mod);
+      	if(!modrole){
+      		console.warn("I could not fetch this role. Does it exist? Is this the right role ID?")
+      	} else {
+		    channel.createOverwrite(modrole, {
+		      VIEW_CHANNEL: true,
+		      SEND_MESSAGES: true,
+		      READ_MESSAGE_HISTORY: true
+		    });
+      	}
+      })
       channel.createOverwrite(everyone, {
         VIEW_CHANNEL: false
       });
@@ -49,27 +55,33 @@ client.on("message", async message => {
       })
       let author = message.author;
       const newTicket = new Discord.MessageEmbed()
-	.setColor("GREEN").setAuthor(author.tag, author.avatarURL({dynamic: true}))
-	.setTitle("New ticket created")
-	.addField("Ticket no.", actualticket, true)
-	.addField("Channel", `<#${channel.id}>`, true)
+		.setColor("GREEN")
+		.setAuthor(author.tag, author.avatarURL({dynamic: true}))
+		.setTitle(`Ticket #${actualticket}`)
+		.addField("Channel", `<#${channel.id}>`, true)
       let supportServer = client.guilds.cache.get(config.guild);
       if(config.logs){
-	supportServer.channels.cache.get(config.log).send({embed: newTicket})
+		try {
+			supportServer.channels.cache.get(config.log).send({embed: newTicket})
+		} catch(e) {
+			if(e) supportServer.channels.cache.get(config.log).send(`Ticket #${actualticket} was created by ${author.tag}.`)
+		}
       }
       const newChannel = new Discord.MessageEmbed()
         .setColor("BLUE").setAuthor(author.tag, author.avatarURL())
         .setDescription(`Ticket #${actualticket} created.\nUser: ${author}\nID: ${author.id}`)
         .setTimestamp()
-      await supportServer.channels.cache.get(channel.id).send({embed:newChannel});
-      message.author.send(`Thanks for contacting us, ${author.username}! We'll get back to you soon.\nThe ticket #${actualticket} has been created.`)
+      try {
+      	supportServer.channels.cache.get(channel.id).send({embed:newChannel});
+      } catch(e) {
+      	supportServer.channels.cache.get(channel.id).send(`This ticket was created by ${author.tag}.`)
+      }
+      message.author.send(`Thanks for contacting the support team! We'll get back to you quickly.\nYour ticket ID is #${actualticket}.`)
       active.channelID = channel.id;
       active.targetID = author.id;
     }
     channel = client.channels.cache.get(active.channelID);
     var msg = message.content;
-    var text = msg.replace("@everyone", "[everyone]").replace("@here", `[here]`) // idk if that's useful since we're blocking mentions
-    // fix (#6)
     var isPaused = await dbTable.get(`suspended${message.author.id}`);
     var isBlocked = await dbTable.get(`isBlocked${message.author.id}`);
     if(isPaused === true){
