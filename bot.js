@@ -94,13 +94,13 @@ client.on("message", async message => {
       try {
       	client.channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`, {files: [message.attachments.first().url]})
   	  } catch(e) {
-  	  	if(e) client.guilds.cache.get(config.guild).channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`, {files: [message.attachments.first().url]})
+  	if(e) client.guilds.cache.get(config.guild).channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`, {files: [message.attachments.first().url]})
   	  }
     } else {
     	try {
-    		client.channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`);
+    		client.guilds.cache.get(config.guild).channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`);
     	} catch(e) {
-    		if(e) client.channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`)
+    		if(e) client.guilds.cache.get(config.guild).channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`)
     	}
     }
     await dbTable.set(`support_${message.author.id}`, active);
