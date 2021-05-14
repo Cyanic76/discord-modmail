@@ -99,7 +99,7 @@ client.on("message", async message => {
     	try {
     		client.channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`);
     	} catch(e) {
-    		if(e) client.guilds.cache.get(config.guild).channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`)
+    		if(e) client.channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`)
     	}
     }
     await dbTable.set(`support_${message.author.id}`, active);
