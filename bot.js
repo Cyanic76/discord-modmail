@@ -113,7 +113,7 @@ client.on("message", async message => {
   if(support){
     var support = await table.get(`support_${support}`);
     let supportUser = client.users.cache.get(support.targetID);
-    if(!supportUser) return message.channel.delete();
+    if(!supportUser) return message.channel.send("Could not get the user. A restart may be required. If you don't need this ticket anymore, you're free to close it with `"+config.prefix+"complete` command.");
     
     // reply (with user and role)
     if(message.content.startsWith(`${config.prefix}reply`)){
