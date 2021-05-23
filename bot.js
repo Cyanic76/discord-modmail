@@ -111,6 +111,7 @@ client.on("message", async message => {
   var table = new db.table("Tickets");
   var support = await table.get(`supportChannel_${message.channel.id}`);
   let participants = support.participants;
+  let supportServer = client.guilds.cache.get(config.guild);
   if(support){
     var support = await table.get(`support_${support}`);
     let supportUser = client.users.cache.get(support.targetID);
@@ -229,7 +230,7 @@ client.on("message", async message => {
         message.channel.delete()
         let u = await client.users.fetch(userID);
         let log = new Discord.MessageEmbed()
-        .setColor("BLUE").setAuthor(u.tag, u.avatarURL())
+        .setColor("RED").setAuthor(u.tag, u.avatarURL())
         .setDescription(`Ticket #${actualticket} closed.\nUser: ${u.username}\nID: ${userID}`)
         .setTimestamp()
         let participed = "";
@@ -243,6 +244,7 @@ client.on("message", async message => {
     	if(config.showParticipants === true){
     		log.addField(`Participants - ${participants.size}`, `${participed}`)
     	}
+      	supportServer.channels.cache.get(channel.id).send({embed:log});
         return client.users.cache.get(support.targetID).send(`Thanks for getting in touch with us. If you wish to open a new ticket, feel free to message me.\nYour ticket #${actualticket} has been closed.`)
       }
     };
