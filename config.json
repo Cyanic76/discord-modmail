@@ -6,6 +6,5 @@
 		"bot": "Your bot role ID",
 		"mod": ["Your moderator/support team role ID"]
 	},
-	"showParticipants": true,
 	"ticketCategory": "Your support server's TICKET category ID"
 }
