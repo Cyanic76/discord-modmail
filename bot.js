@@ -79,7 +79,6 @@ client.on("message", async message => {
       message.author.send(`Thanks for contacting the support team! We'll get back to you quickly.\nYour ticket ID is #${actualticket}.`)
       active.channelID = channel.id;
       active.targetID = author.id;
-      active.participants = [];
     }
     channel = client.channels.cache.get(active.channelID);
     var msg = message.content;
@@ -113,27 +112,11 @@ client.on("message", async message => {
   let supportServer = client.guilds.cache.get(config.guild);
   if(support){
     var support = await table.get(`support_${support}`);
-    let participants = support.participants;
     let supportUser = client.users.cache.get(support.targetID);
     if(!supportUser) return message.channel.delete();
-    
-    /* THIS FEATURE IS BEING TESTED! 
-	   To enable it, set config.showParticipants to true.
-	   This works on my side, so it should work on yours too.
-    */
-    if(config.showParticipants === true){
-	    if(participants.includes(message.author.id)){
-	    	// the author is already counted as a participant
-	    } else {
-	    	participants.push(message.author.id); // add participant ID to array
-	    	await table.set(`support_${message.channel.id}.participants`, participants);
-
-	    }
-    }
 
     // reply (with user and role)
     if(message.content.startsWith(`${config.prefix}reply`)){
-      participants.push(message.author.id)
       var isPause = await table.get(`suspended${support.targetID}`);
       let isBlock = await table.get(`isBlocked${support.targetID}`);
       if(isPause === true) return message.channel.send("This ticket already paused. Unpause it to continue.")
@@ -232,18 +215,6 @@ client.on("message", async message => {
         .setColor("RED").setAuthor(u.tag, u.avatarURL())
         .setDescription(`Ticket #${actualticket} closed.\nUser: ${u.username}\nID: ${userID}`)
         .setTimestamp()
-	let ps = support.participants;
-        let participed = "";
-        ps.forEach(p => {
-        	client.users.fetch(p).then(user => {
-        		participed += `${user.username}\n`
-        	}).catch(e => {
-        		if(e) participed += `User ${p}`;
-        	})
-        })
-    	if(config.showParticipants === true){
-    		end_log.addField(`Participants - ${participants.size}`, `${participed}`)
-    	}
         await table.delete(`support_${userID}`);
       	supportServer.channels.cache.get(config.log).send({embed:end_log});
         return client.users.cache.get(support.targetID).send(`Thanks for getting in touch with us. If you wish to open a new ticket, feel free to message me.\nYour ticket #${actualticket} has been closed.`)
