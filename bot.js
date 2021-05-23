@@ -32,8 +32,7 @@ client.on("message", async message => {
       channel = await guild.channels.create(`${message.author.username}-${message.author.discriminator}`, { type: 'text', reason: `New modmail thread: #${actualticket}.` });
       channel.setParent(config.ticketCategory);
       channel.setTopic(`#${actualticket} | Use ${config.prefix}complete to close this ticket | ${message.author.username}'s ticket`)
-      const moderators = ["mod role id goes here"]; // array
-      moderators.forEach(moderator => {
+      config.roles.mod.forEach(moderator => {
       	let modrole = guild.roles.cache.get(config.roles.mod);
       	if(!modrole){
       		console.warn("I could not fetch this role. Does it exist? Is this the right role ID?")
@@ -80,6 +79,7 @@ client.on("message", async message => {
       message.author.send(`Thanks for contacting the support team! We'll get back to you quickly.\nYour ticket ID is #${actualticket}.`)
       active.channelID = channel.id;
       active.targetID = author.id;
+      active.participants = [];
     }
     channel = client.channels.cache.get(active.channelID);
     var msg = message.content;
@@ -92,15 +92,15 @@ client.on("message", async message => {
     if(message.attachments.size > 0){
       let attachment = new Discord.MessageAttachment(message.attachments.first().url)
       try {
-      	client.channels.cache.get(active.channelID).send(`${message.author.username} > ${msg}`, {files: [message.attachments.first().url]})
+      	client.channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`, {files: [message.attachments.first().url]})
   	  } catch(e) {
-  	if(e) client.guilds.cache.get(config.guild).channels.cache.get(active.channelID).send(`${message.author.username} > ${msg}`, {files: [message.attachments.first().url]})
+  	  	if(e) client.guilds.cache.get(config.guild).channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`, {files: [message.attachments.first().url]})
   	  }
     } else {
     	try {
-    		client.guilds.cache.get(config.guild).channels.cache.get(active.channelID).send(`${message.author.username} > ${msg}`);
+    		client.channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`);
     	} catch(e) {
-    		if(e) client.guilds.cache.get(config.guild).channels.cache.get(active.channelID).send(`${message.author.username} > ${msg}`)
+    		if(e) client.guilds.cache.get(config.guild).channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`)
     	}
     }
     await dbTable.set(`support_${message.author.id}`, active);
@@ -110,13 +110,29 @@ client.on("message", async message => {
   if(message.author.bot) return;
   var table = new db.table("Tickets");
   var support = await table.get(`supportChannel_${message.channel.id}`);
+  let participants = support.participants;
   if(support){
     var support = await table.get(`support_${support}`);
     let supportUser = client.users.cache.get(support.targetID);
-    if(!supportUser) return message.channel.send("Could not get the user. A restart may be required. If you don't need this ticket anymore, you're free to close it with `"+config.prefix+"complete` command.");
+    if(!supportUser) return message.channel.delete();
     
+    /* THIS FEATURE IS BEING TESTED! 
+	   To enable it, set config.showParticipants to true.
+	   This works on my side, so it should work on yours too.
+    */
+    if(config.showParticipants === true){
+	    if(participants.includes(message.author.id)){
+	    	// the author is already counted as a participant
+	    } else {
+	    	participants.push(message.author.id); // add participant ID to array
+	    	await table.set(`support_${message.channel.id}.participants`, participants);
+
+	    }
+    }
+
     // reply (with user and role)
     if(message.content.startsWith(`${config.prefix}reply`)){
+      participants.push(message.author.id)
       var isPause = await table.get(`suspended${support.targetID}`);
       let isBlock = await table.get(`isBlocked${support.targetID}`);
       if(isPause === true) return message.channel.send("This ticket already paused. Unpause it to continue.")
@@ -211,6 +227,22 @@ client.on("message", async message => {
         table.delete(`support_${userID}`);
         let actualticket = await table.get("ticket");
         message.channel.delete()
+        let u = await client.users.fetch(userID);
+        let log = new Discord.MessageEmbed()
+        .setColor("BLUE").setAuthor(u.tag, u.avatarURL())
+        .setDescription(`Ticket #${actualticket} closed.\nUser: ${u.username}\nID: ${userID}`)
+        .setTimestamp()
+        let participed = "";
+        participants.forEach(p => {
+        	client.users.fetch(p).then(user => {
+        		participed += `${user.username}\n`
+        	}).catch(e => {
+        		if(e) participed += `User ${p}`;
+        	})
+        })
+    	if(config.showParticipants === true){
+    		log.addField(`Participants - ${participants.size}`, `${participed}`)
+    	}
         return client.users.cache.get(support.targetID).send(`Thanks for getting in touch with us. If you wish to open a new ticket, feel free to message me.\nYour ticket #${actualticket} has been closed.`)
       }
     };
