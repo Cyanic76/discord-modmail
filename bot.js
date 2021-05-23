@@ -110,10 +110,10 @@ client.on("message", async message => {
   if(message.author.bot) return;
   var table = new db.table("Tickets");
   var support = await table.get(`supportChannel_${message.channel.id}`);
-  let participants = support.participants;
   let supportServer = client.guilds.cache.get(config.guild);
   if(support){
     var support = await table.get(`support_${support}`);
+    let participants = support.participants;
     let supportUser = client.users.cache.get(support.targetID);
     if(!supportUser) return message.channel.delete();
     
