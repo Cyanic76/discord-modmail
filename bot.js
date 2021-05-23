@@ -225,7 +225,6 @@ client.on("message", async message => {
         setTimeout(() => {end(support.targetID);}, timeout)
       }
       async function end(userID){
-        table.delete(`support_${userID}`);
         let actualticket = await table.get("ticket");
         message.channel.delete()
         let u = await client.users.fetch(userID);
@@ -233,8 +232,9 @@ client.on("message", async message => {
         .setColor("RED").setAuthor(u.tag, u.avatarURL())
         .setDescription(`Ticket #${actualticket} closed.\nUser: ${u.username}\nID: ${userID}`)
         .setTimestamp()
+	let ps = support.participants;
         let participed = "";
-        participants.forEach(p => {
+        ps.forEach(p => {
         	client.users.fetch(p).then(user => {
         		participed += `${user.username}\n`
         	}).catch(e => {
@@ -244,6 +244,7 @@ client.on("message", async message => {
     	if(config.showParticipants === true){
     		end_log.addField(`Participants - ${participants.size}`, `${participed}`)
     	}
+        await table.delete(`support_${userID}`);
       	supportServer.channels.cache.get(config.log).send({embed:end_log});
         return client.users.cache.get(support.targetID).send(`Thanks for getting in touch with us. If you wish to open a new ticket, feel free to message me.\nYour ticket #${actualticket} has been closed.`)
       }
