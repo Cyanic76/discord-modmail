@@ -32,8 +32,8 @@ client.on("message", async message => {
       channel = await guild.channels.create(`${message.author.username}-${message.author.discriminator}`, { type: 'text', reason: `New modmail thread: #${actualticket}.` });
       channel.setParent(config.ticketCategory);
       channel.setTopic(`#${actualticket} | Use ${config.prefix}complete to close this ticket | ${message.author.username}'s ticket`)
-      config.roles.mod.forEach(moderator => {
-      	let modrole = guild.roles.cache.get(moderator);
+      config.roles.mod.forEach(mod => {
+      	let modrole = guild.roles.cache.get(mod);
       	if(!modrole){
       		console.warn("I could not fetch this role. Does it exist? Is this the right role ID?")
       	} else {
