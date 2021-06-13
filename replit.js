@@ -6,7 +6,6 @@ const Database = require("@replit/database");
 const Discord = require("discord.js");
 const db = new Database();
 const config = require("./config.json");
-const table = new db.table("Tickets");
 
 // declare the client
 const client = new Discord.Client();
