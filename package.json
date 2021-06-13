@@ -9,7 +9,8 @@
   "dependencies": {
     "express": "^4.17.1",
     "discord.js": "^12.4.1",
-    "quick.db": "^7.1.2"
+    "quick.db": "^7.1.2",
+    "@replit/database": "^2.0.1"
   },
   "engines": {
     "node": "12.x"
