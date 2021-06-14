@@ -86,8 +86,8 @@ client.on("message", async message => {
     }
     channel = client.channels.cache.get(active.channelID);
     var msg = message.content;
-    var isPaused = await dbTable.get(`suspended${message.author.id}`);
-    var isBlocked = await dbTable.get(`isBlocked${message.author.id}`);
+    var isPaused = await db.get(`suspended${message.author.id}`);
+    var isBlocked = await db.get(`isBlocked${message.author.id}`);
     if(isPaused === true){
     	return message.channel.send("Sorry, but your ticket is currently paused. I'll message you back when the support team unpause it.")
     }
