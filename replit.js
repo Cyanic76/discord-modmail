@@ -64,6 +64,9 @@ client.on("message", async message => {
 		.setTitle(`Ticket #${actualticket}`)
 		.addField("Channel", `<#${channel.id}>`, true)
       let supportServer = client.guilds.cache.get(config.guild);
+      // Make sure the channels get registered to the bot's cache
+      supportServer.channels.cache.get(config.log);
+      supportServer.channels.cache.get(channel.id);
       if(config.logs){
 		try {
 			supportServer.channels.cache.get(config.log).send({embed: newTicket})
@@ -71,12 +74,8 @@ client.on("message", async message => {
 			if(e) supportServer.channels.cache.get(config.log).send(`Ticket #${actualticket} was created by ${author.tag}.`)
 		}
       }
-      const newChannel = new Discord.MessageEmbed()
-        .setColor("BLUE").setAuthor(author.tag, author.avatarURL())
-        .setDescription(`Ticket #${actualticket} created.\nUser: ${author}\nID: ${author.id}`)
-        .setTimestamp()
       try {
-      	supportServer.channels.cache.get(channel.id).send({embed:newChannel});
+      	client.channels.cache.get(channel.id).send(`This ticket was created by ${author.tag}.`);
       } catch(e) {
       	supportServer.channels.cache.get(channel.id).send(`This ticket was created by ${author.tag}.`)
       }
