@@ -3,7 +3,7 @@
 A modmail with rich features.
 
 - [Features](https://github.com/Cyanic76/discord-modmail/wiki/Features) (NEW)
-- [Get the modmail up and running](https://github.com/Cyanic76/discord-modmail/wiki/Installation)
+- [Get the modmail up and running](https://github.com/Cyanic76/discord-modmail/wiki/Installation) (**MAKE SURE TO READ THE WHOLE WIKI PAGE**)
 - [Needed npm modules](https://github.com/Cyanic76/discord-modmail/wiki/Dependencies)
 
 ## About.
