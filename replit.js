@@ -95,9 +95,9 @@ client.on("message", async message => {
     if(message.attachments.size > 0){
       let attachment = new Discord.MessageAttachment(message.attachments.first().url)
       try {
-      	client.channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`, {files: [message.attachments.first().url]})
+      	client.channels.cache.get(active.channelID).send(`${message.author.username} > ${msg}`, {files: [message.attachments.first().url]})
   	  } catch(e) {
-  	  	if(e) client.guilds.cache.get(config.guild).channels.cache.get(active.channelID).send(`${message.author.username} > ${text}`, {files: [message.attachments.first().url]})
+  	  	if(e) client.guilds.cache.get(config.guild).channels.cache.get(active.channelID).send(`${message.author.username} > ${msg}`, {files: [message.attachments.first().url]})
   	  }
     } else {
     	try {
