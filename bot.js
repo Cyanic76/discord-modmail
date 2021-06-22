@@ -18,7 +18,7 @@ client.on("message", async message => {
     const dbTable = new db.table("Tickets");
     if(message.author.bot) return;
     if(message.content.includes("@everyone") || message.content.includes("@here")) return message.author.send("I'm sorry, but you can not use everyone/here mentions in a modmail thread.")
-    let active = await dbTable.get(`support_${message.author.id}`)
+    let active = await dbTable.get(`support_${message.author.id}`);
     let guild = client.guilds.cache.get(config.guild);
     let channel, found = true;
     let user = await dbTable.get(`isBlocked${message.author.id}`);
@@ -107,8 +107,7 @@ client.on("message", async message => {
     return;
   }
   if(message.author.bot) return;
-  var table = new db.table("Tickets");
-  var support = await table.get(`supportChannel_${message.channel.id}`);
+  var support = await dbTable.get(`supportChannel_${message.channel.id}`);
   let supportServer = client.guilds.cache.get(config.guild);
   if(support){
     var support = await table.get(`support_${support}`);
@@ -241,6 +240,21 @@ client.on("message", async message => {
       return message.channel.send("You can not use that.");
     }
   }
+})
+
+client.on("guildMemberRemove", async member => {
+  if(config.deleteTicketOnLeave === true){
+    let active = await table.get(`support_${message.author.id}`);
+    if(active === null) return;
+    client.channels.cache.get(active.channelID).delete();
+    await table.delete(`support_${message.author.id}`);
+    let end_log = new Discord.MessageEmbed()
+      .setColor("RED").setAuthor(member.tag, member.avatarURL())
+      .setDescription(`Ticket #${actualticket} closed because the user has left the server.\nUser: ${member.username}\nID: ${member.id}`)
+      .setTimestamp()
+    supportServer.channels.cache.get(config.log).send({embed:end_log});
+    return;
+  } else return;
 })
 
 /*
