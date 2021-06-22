@@ -7,5 +7,6 @@
 		"mod": ["Your moderator/support team role ID"]
 	},
 	"ticketCategory": "Your support server's TICKET category ID",
-	"dmUsers": false
+	"dmUsers": false,
+	"deleteTicketOnLeave": false
 }
