@@ -245,6 +245,22 @@ client.on("message", async message => {
   }
 })
 
+client.on("guildMemberRemove", async member => {
+  if(config.deleteTicketOnLeave === true){
+    let active = await db.get(`support_${message.author.id}`);
+    if(active === null) return;
+    client.channels.cache.get(active.channelID).delete();
+    await db.delete(`support_${message.author.id}`);
+    let end_log = new Discord.MessageEmbed()
+      .setColor("RED").setAuthor(member.tag, member.avatarURL())
+      .setDescription(`Ticket #${actualticket} closed because the user has left the server.\nUser: ${member.username}\nID: ${member.id}`)
+      .setTimestamp()
+    supportServer.channels.cache.get(config.log).send({embed:end_log});
+    return;
+  } else return;
+})
+
+
 /*
    just in case:
    the token should not be here.
