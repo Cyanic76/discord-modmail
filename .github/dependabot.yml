@@ -7,6 +7,4 @@ updates:
     commit-message:
       prefix: "Dependency:"
     labels:
-      - "dependency"
-    reviewers:
-      - "Cyanic76"
+      - "npm"
