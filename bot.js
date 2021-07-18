@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const db = require("quick.db");
 const config = require("./config.json");
 const dbTable = new db.table("Tickets");
+const {paste} = require("ubuntu-pastebin");
 
 // declare the client
 const client = new Discord.Client();
@@ -202,20 +203,27 @@ client.on("message", async message => {
         .setDescription(`This ticket will be deleted in **10** seconds...\n:lock: This thread has been locked and closed.`)
         .setColor("RED").setTimestamp()
         message.channel.send({embed: embed})
-        var timeout = 10000
-        setTimeout(() => {end(support.targetID);}, timeout)
-      }
-      async function end(userID){
-        let actualticket = await dbTable.get("ticket");
-        message.channel.delete()
-        let u = await client.users.fetch(userID);
-        let end_log = new Discord.MessageEmbed()
-        .setColor("RED").setAuthor(u.tag, u.avatarURL())
-        .setDescription(`Ticket #${actualticket} closed.\nUser: ${u.username}\nID: ${userID}`)
-        .setTimestamp()
-        await dbTable.delete(`support_${userID}`);
-      	supportServer.channels.cache.get(config.log).send({embed:end_log});
-        return client.users.cache.get(support.targetID).send(`Thanks for getting in touch with us. If you wish to open a new ticket, feel free to message me.\nYour ticket #${actualticket} has been closed.`)
+        let collection = `Thread ${message.channel.id}\n\n`;
+        let count = 0;
+        message.channel.messages.cache.map(message => {
+          let str = message.content;
+          let aut = message.author.username;
+          collection += `${aut.replace("Dave.", "Dave (bot) ")}: ${str.replace("-reply ", "").replace("-areply ", "")}\n\n`;
+          count++;
+	});
+	paste(collection).then(url => {
+	  let actualticket2 = await dbTable.get("ticket");
+          message.channel.delete();
+          let u = await client.users.fetch(userID);
+          let end_log = new Discord.MessageEmbed()
+            .setColor("RED").setAuthor(u.tag, u.avatarURL())
+            .setDescription(`Ticket #${actualticket2} closed.\nUser: ${u.username}\nID: ${userID}`)
+	    .addField("Read the thread", `[Click here](${url})`);
+            .setTimestamp()
+          await dbTable.delete(`support_${userID}`);
+          supportServer.channels.cache.get(config.log).send({embed:end_log});
+	  return client.users.cache.get(support.targetID).send(`Thanks for getting in touch with us. If you wish to open a new ticket, feel free to message me.\nYour ticket #${actualticket} has been closed.`)
+	})
       }
     };
 })
