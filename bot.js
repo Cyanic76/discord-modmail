@@ -1,3 +1,9 @@
+/*
+    REPLIT USERS:
+    Do not use this file. Use replit.js instead.
+    Read more here: https://v.gd/cdmrpu
+*/
+
 const Discord = require("discord.js");
 const db = require("quick.db");
 const config = require("./config.json");
