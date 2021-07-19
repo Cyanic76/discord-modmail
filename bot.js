@@ -219,7 +219,6 @@ client.on("message", async message => {
 	});
 	paste(collection).then(url => {
 	  let actualticket2 = await dbTable.get("ticket");
-          message.channel.delete();
           let u = await client.users.fetch(userID);
           let end_log = new Discord.MessageEmbed()
             .setColor("RED").setAuthor(u.tag, u.avatarURL())
@@ -227,6 +226,7 @@ client.on("message", async message => {
 	    .addField("Read the thread", `[Click here](${url})`);
             .setTimestamp()
           await dbTable.delete(`support_${userID}`);
+          setTimeout(() => {message.channel.delete();}, 10000);
           supportServer.channels.cache.get(config.log).send({embed:end_log});
 	  return client.users.cache.get(support.targetID).send(`Thanks for getting in touch with us. If you wish to open a new ticket, feel free to message me.\nYour ticket #${actualticket} has been closed.`)
 	})
