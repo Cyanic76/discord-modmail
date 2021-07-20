@@ -7,7 +7,6 @@
 const Discord = require("discord.js");
 const db = require("quick.db");
 const config = require("./config.json");
-const dbTable = new db.table("Tickets");
 const {paste} = require("ubuntu-pastebin");
 
 // declare the client
@@ -20,6 +19,8 @@ client.on("ready", () => {
 })
 
 client.on("message", async message => {
+
+  const dbTable = new db.table("Tickets");
   
   if(message.channel.type === "dm"){
     if(message.author.bot) return;
