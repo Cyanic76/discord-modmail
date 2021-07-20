@@ -120,10 +120,12 @@ client.on("message", async message => {
     let supportUser = client.users.cache.get(support.targetID);
     if(!supportUser) return message.channel.delete();
 
+    const dbTable2 = new db.table("Tickets");
+
     // reply (with user and role)
     if(message.content.startsWith(`${config.prefix}reply`)){
-      var isPause = await dbTable.get(`suspended${support.targetID}`);
-      let isBlock = await dbTable.get(`isBlocked${support.targetID}`);
+      var isPause = await dbTable2.get(`suspended${support.targetID}`);
+      let isBlock = await dbTable2.get(`isBlocked${support.targetID}`);
       if(isPause === true) return message.channel.send("This ticket already paused. Unpause it to continue.")
       if(isBlock === true) return message.channel.send("The user is blocked. Unblock them to continue or close the ticket.")
       var args = message.content.split(" ").slice(1)
@@ -139,8 +141,8 @@ client.on("message", async message => {
     
     // anonymous reply
     if(message.content.startsWith(`${config.prefix}areply`)){
-      var isPause = await dbTable.get(`suspended${support.targetID}`);
-      let isBlock = await dbTable.get(`isBlocked${support.targetID}`);
+      var isPause = await dbTable2.get(`suspended${support.targetID}`);
+      let isBlock = await dbTable2.get(`isBlocked${support.targetID}`);
       if(isPause === true) return message.channel.send("This ticket already paused. Unpause it to continue.")
       if(isBlock === true) return message.channel.send("The user is blocked. Unblock them to continue or close the ticket.")
       var args = message.content.split(" ").slice(1)
@@ -156,7 +158,7 @@ client.on("message", async message => {
     
     // suspend a thread
     if(message.content === `${config.prefix}pause`){
-      var isPause = await dbTable.get(`suspended${support.targetID}`);
+      var isPause = await dbTable2.get(`suspended${support.targetID}`);
       if(isPause === true || isPause === "true") return message.channel.send("This ticket already paused. Unpause it to continue.")
       await dbTable.set(`suspended${support.targetID}`, true);
       var suspend = new Discord.MessageEmbed()
@@ -169,7 +171,7 @@ client.on("message", async message => {
     
     // continue a thread
     if(message.content === `${config.prefix}continue`){
-      var isPause = await dbTable.get(`suspended${support.targetID}`);
+      var isPause = await dbTable2.get(`suspended${support.targetID}`);
       if(isPause === null || isPause === false) return message.channel.send("This ticket was not paused.");
       await dbTable.delete(`suspended${support.targetID}`);
       var c = new Discord.MessageEmbed()
@@ -193,9 +195,9 @@ client.on("message", async message => {
 	  if(config.logs){
 	    client.channels.cache.get(config.log).send({embed: blocked})
 	  }
-      let isBlock = await dbTable.get(`isBlocked${support.targetID}`);
+      let isBlock = await dbTable2.get(`isBlocked${support.targetID}`);
       if(isBlock === true) return message.channel.send("The user is already blocked.")
-      await dbTable.set(`isBlocked${support.targetID}`, true);
+      await dbTable2.set(`isBlocked${support.targetID}`, true);
       var c = new Discord.MessageEmbed()
       .setDescription("⏸️ The user has been blocked from the modmail. You may now close the ticket or unblock them to continue.")
       .setColor("RED").setTimestamp()
@@ -218,14 +220,14 @@ client.on("message", async message => {
           count++;
 	});
 	paste(collection).then(url => {
-	  let actualticket2 = await dbTable.get("ticket");
+	  let actualticket2 = await dbTable2.get("ticket");
           let u = await client.users.fetch(support.targetID);
           let end_log = new Discord.MessageEmbed()
             .setColor("RED").setAuthor(u.tag, u.avatarURL())
             .setDescription(`Ticket #${actualticket2} closed.\nUser: ${u.username}\nID: ${userID}`)
 	    .addField("Read the thread", `[Click here](${url})`);
             .setTimestamp()
-          await dbTable.delete(`support_${userID}`);
+          await dbTable2.delete(`support_${userID}`);
           setTimeout(() => {message.channel.delete();}, 10000);
           supportServer.channels.cache.get(config.log).send({embed:end_log});
 	  return client.users.cache.get(support.targetID).send(`Thanks for getting in touch with us. If you wish to open a new ticket, feel free to message me.\nYour ticket #${actualticket} has been closed.`)
@@ -239,9 +241,10 @@ client.on("message", async message => {
     if(message.guild.member(message.author).roles.cache.has(config.roles.mod)){
       var args = message.content.split(" ").slice(1);
       client.users.fetch(`${args[0]}`).then(async user => {
-      	let data = await dbTable.get(`isBlocked${args[0]}`);
+	const dbTable3 = new db.table("Tickets");
+      	let data = await dbTable3.get(`isBlocked${args[0]}`);
         if(data === true){
-          await dbTable.delete(`isBlocked${args[0]}`);
+          await dbTable3.delete(`isBlocked${args[0]}`);
                 return message.channel.send(`Successfully unblocked ${user.username} (${user.id}) from the modmail service.`);
         } else {
           return message.channel.send(`${user.username} (${user.id}) is not blocked from the modmail at the moment.`)
@@ -257,10 +260,11 @@ client.on("message", async message => {
 
 client.on("guildMemberRemove", async member => {
   if(config.deleteTicketOnLeave === true){
-    let active = await dbTable.get(`support_${message.author.id}`);
+    const dbTabl = new db.table("Tickets");
+    let active = await dbTabl.get(`support_${message.author.id}`);
     if(active === null) return;
     client.channels.cache.get(active.channelID).delete();
-    await dbTable.delete(`support_${message.author.id}`);
+    await dbTabl.delete(`support_${message.author.id}`);
     let end_log = new Discord.MessageEmbed()
       .setColor("RED").setAuthor(member.tag, member.avatarURL())
       .setDescription(`Ticket #${actualticket} closed because the user has left the server.\nUser: ${member.username}\nID: ${member.id}`)
