@@ -219,7 +219,7 @@ client.on("message", async message => {
 	});
 	paste(collection).then(url => {
 	  let actualticket2 = await dbTable.get("ticket");
-          let u = await client.users.fetch(userID);
+          let u = await client.users.fetch(support.targetID);
           let end_log = new Discord.MessageEmbed()
             .setColor("RED").setAuthor(u.tag, u.avatarURL())
             .setDescription(`Ticket #${actualticket2} closed.\nUser: ${u.username}\nID: ${userID}`)
