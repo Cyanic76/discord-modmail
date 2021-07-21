@@ -214,10 +214,11 @@ client.on("message", async message => {
         message.channel.send({embed: embed})
         let collection = `Thread ${message.channel.id}\n\n`;
         let count = 0;
-        message.channel.messages.cache.map(message => {
-          let str = message.content;
-          let aut = message.author.username;
-          collection += `${aut.replace("Dave.", "Dave (bot) ")}: ${str.replace("-reply ", "").replace("-areply ", "")}\n\n`;
+        message.channel.messages.cache.map(msg => {
+	  // could be an error here since message was already defined
+          let str = msg.content;
+          let aut = msg.author.username;
+          collection += `${aut}: ${str}\n\n`;
           count++;
 	});
 	paste(collection).then(url => {
