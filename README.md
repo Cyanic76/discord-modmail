@@ -2,30 +2,13 @@
 
 A modmail with rich features.
 
-- [Features](https://github.com/Cyanic76/discord-modmail/wiki/Features) (NEW)
-- [Get the modmail up and running](https://github.com/Cyanic76/discord-modmail/wiki/Installation) (**MAKE SURE TO READ THE WHOLE WIKI PAGE**)
-- [Needed npm modules](https://github.com/Cyanic76/discord-modmail/wiki/Dependencies)
+## Links
 
-## About.
+- Read more about the features [here](https://github.com/Cyanic76/discord-modmail/wiki/Features).
+- Here's how to get the modmail [up and running](https://github.com/Cyanic76/discord-modmail/wiki/Installation)
+  - [Needed npm modules](https://github.com/Cyanic76/discord-modmail/wiki/Dependencies)
+- [Want to contribute?](https://github.com/Cyanic76/discord-modmail/wiki/Contributing)
 
-![GitHub OG](https://opengraph.githubassets.com/deafcb8c867e1c48b0dfb81deea1c3791330643f8571a0d15986c89303fce9d7/Cyanic76/discord-modmail)
+---
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+by [Cyanic76](https://github.com/Cyanic76) - released under [MIT](https://github.com/Cyanic76/discord-modmail/blob/master/LICENSE).
