@@ -1,4 +1,4 @@
-const { Client, Intents } = require("discord.js");
+const { Client, Intents, Permissions, MessageEmbed } = require("discord.js");
 const client = new Client({
     intents: [
         Intents.FLAGS.GUILDS,
@@ -41,7 +41,24 @@ client.on("messageCreate", async message => {
 				type: "GUILD_TEXT",
 				topic: `#${ticket} | From ${message.author.username}`,
 				parent: tc,
-				reason: `${message.author.id} opened a ticket through the modmail service.`
+				reason: `${message.author.id} opened a ticket through the modmail service.`,
+				permissionOverwrites: [
+					{id: guild.roles.everyone, deny: [Permissions.FLAGS.VIEW_CHANNEL]},
+					{id: guild.roles.fetch(config.roles.mod), allow: [
+						Permissions.FLAGS.VIEW_CHANNEL,
+						Permissions.FLAGS.SEND_MESSAGES,
+						Permissions.FLAGS.ATTACH_FILES,
+						Permissions.FLAGS.EMBED_LINKS,
+						Permissions.FLAGS.READ_MESSAGE_HISTORY
+					]},
+                                        {id: guild.roles.fetch(config.roles.bot), allow: [
+                                                Permissions.FLAGS.VIEW_CHANNEL,
+                                                Permissions.FLAGS.SEND_MESSAGES,
+                                                Permissions.FLAGS.ATTACH_FILES,
+                                                Permissions.FLAGS.EMBED_LINKS,
+                                                Permissions.FLAGS.READ_MESSAGE_HISTORY
+                                        ]}
+				]
 			});
 			let author = message.author;
 			const newTicketLog = new MessageEmbed()
