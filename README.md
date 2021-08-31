@@ -11,7 +11,11 @@ A modmail with rich features.
 
 ## discord.js 13 update
 
-Not yet planned. Use [Discord's Threads](https://support.discord.com/hc/en-us/articles/4403205878423-Threads) instead.
+This project **will** get updated to discord.js 13 at the same time as [my server's bot](https://github.com/Cyanic76/Dave.js).
+
+No slash command will be used for now, but they will come in a future update.
+
+Use [Discord's Threads](https://support.discord.com/hc/en-us/articles/4403205878423-Threads) for now.
 
 ---
 
