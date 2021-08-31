@@ -2,11 +2,11 @@
 
 A modmail with rich features using the latest discord.js version.
 
-:warning: There is currently **NO SUPPORT** for this branch. Use at your own risk! [Roadmap](https://github.com/Cyanic76/discord-modmail/pull/33)
-
 ## Links
 
-Coming soon. [Read here for djs 12](https://github.com/Cyanic76/discord-modmail#links)
+- [Get the modmail up & running](https://github.com/Cyanic76/discord-modmail/wiki/Installation)
+- [Host the modmail on repl.it](https://github.com/Cyanic76/discord-modmail/wiki/Installation#replit-users)
+- [Errors & fixes](https://github.com/Cyanic76/discord-modmail/wiki/Errors)
 
 ---
 
