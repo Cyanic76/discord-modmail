@@ -24,15 +24,15 @@ client.login(config.token.bot);
 client.on("messageCreate", async message => {
 	if(message.author.bot) return;
 	if(message.content.includes("@everyone") || message.content.includes("@here")) return message.author.send({content: "You're not allowed to use those mentions."});
-	console.log("01 no mention, not a bot");
 	// Used a new table so it doesn't get messed up with the old one
 	const table = new db.table("Support13");
 	if(message.channel.type === "DM"){
 		let active = await table.get(`support_${message.author.id}`);
 		let block = await table.get(`blocked_${message.author.id}`);
+		if(config.dmUsers === false) return message.author.send("Hey! Sorry, but the modmail is currently closed.")
 		if(block === true) return message.author.send("You are not allowed to use modmail.");
-		let guild = await client.guilds.fetch(''); // set the server id here
-		let tc = await guild.channels.fetch(''); // set the category id for your tickets here
+		let guild = await client.guilds.fetch(config.guild);
+		let tc = await guild.channels.fetch(config.ticketCategory);
 		let channel, found = true;
 		if(active === null){
 			await table.add("Tickets", 1);
@@ -49,7 +49,7 @@ client.on("messageCreate", async message => {
 				.setDescription(`opened ticket #${ticket}.`)
 				.setTimestamp()
 				.setColor("0x6666ff")
-			let logs = await client.channels.fetch(''); // set the log channel id here
+			let logs = await client.channels.fetch(config.log); // set the log channel id here
 			logs.send({embeds: [newTicketLog]});
 			message.author.send(`Hello! Thanks for getting in touch. Our support team will get back to you quickly.`);
 			await table.set(`support_${author.id}`, {channel: channel.id, target: message.author.id, ticket: ticket});
@@ -78,16 +78,16 @@ client.on("messageCreate", async message => {
 		await user.send(`${message.author.username}: ${pending}`);
 		return;
 	};
-	if(message.content === `-id`){
+	if(message.content === `${config.prefix}id`){
 		return message.channel.send({content: `Ticket owner's ID is **${activechannel.author}**.`});
 	}
-	if(message.content === `-b` || message.content === `-block`){
+	if(message.content === `${config.prefix}b` || message.content === `${config.prefix}block`){
 		await table.set(`blocked_${activechannel.author}`, true);
 		await user.send(`Hi! You can not use modmail anymore.\nOn top of that, you can't contribute or get in touch via any way from now on.`)
 		message.channel.send(`This user has been blocked from modmail, and other forms of contribution.`);
 		return;
 	};
-	if(message.content === `-c` || message.content === `-complete`){
+	if(message.content === `${config.prefix}c` || message.content === `${config.prefix}complete`){
 		await table.delete(`channel_${message.channel.id}`);
 		await table.delete(`support_${activechannel.author}`);
 		await user.send({content: "Hi! Your ticket has been closed.\n\nFeel free to DM me whenever it is needed."})
