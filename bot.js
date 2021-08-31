@@ -30,8 +30,10 @@ client.on("messageCreate", async message => {
 	if(message.channel.type === "DM"){
 		let active = await table.get(`support_${message.author.id}`);
 		let block = await table.get(`blocked_${message.author.id}`);
+		let hold = await table.get(`hold_${message.author.id}`);
 		if(config.dmUsers === false) return message.author.send("Hey! Sorry, but the modmail is currently closed.")
 		if(block === true) return message.author.send("You are not allowed to use modmail.");
+		if(hold === true) return message.author.send("The support team put your ticket on hold. Please wait until they get back to you.")
 		let guild = await client.guilds.fetch(config.guild);
 		let tc = await guild.channels.fetch(config.ticketCategory);
 		let channel, found = true;
@@ -91,6 +93,7 @@ client.on("messageCreate", async message => {
 	let args = text.split(" ").slice(1);
 	let pending = args.join(" ");
 	let blocked = await table.get(`blocked_${activechannel.author}`);
+	let onHold = await table.get(`hold_${activechannel.author}`);
 	if(message.content.startsWith(`-r`) || message.content.startsWith(`-reply`)){
 		if(blocked === true) return message.channel.send({content: "This user is blocked."});
 		await user.send(`${message.author.username}: ${pending}`);
@@ -98,10 +101,26 @@ client.on("messageCreate", async message => {
 	};
 	if(message.content === `${config.prefix}id`){
 		return message.channel.send({content: `Ticket owner's ID is **${activechannel.author}**.`});
+	};
+	if(message.content === `${config.prefix}p` || message.content === `${config.prefix}hold`){
+	   	if(blocked === true) return message.channel.send({content: "This user is blocked."});
+		if(onHold === true) return message.channel.send({content: "This thread is already on hold."});
+		await table.set(`hold_${activechannel.author}`, true);
+		message.channel.send(`This thread has been put on hold.`);
+		await user.send(`Hi! Your ticket has been put on hold.`);
+		return;
 	}
+        if(message.content === `${config.prefix}up` || message.content === `${config.prefix}unhold`){
+                if(blocked === true) return message.channel.send({content: "This user is blocked."});
+                if(onHold === true) return message.channel.send({content: "This thread is not on hold."});
+                await table.delete(`hold_${activechannel.author}`);
+                message.channel.send(`This thread isn't on hold anymore.`);
+                await user.send(`Hi! Your ticket isn't on hold anymore.`);
+                return;
+        }
 	if(message.content === `${config.prefix}b` || message.content === `${config.prefix}block`){
 		await table.set(`blocked_${activechannel.author}`, true);
-		await user.send(`Hi! You can not use modmail anymore.\nOn top of that, you can't contribute or get in touch via any way from now on.`)
+		await user.send(`You can not use modmail until further notice.`)
 		message.channel.send(`This user has been blocked from modmail, and other forms of contribution.`);
 		return;
 	};
@@ -123,4 +142,26 @@ client.on("messageCreate", async message => {
 		await table.delete(`channel_${message.channel.id}`);
 		await table.delete(`support_${activechannel.author}`);
 	};
+})
+
+client.on("messageCreate", async message => {
+  if(message.content.startsWith(`${config.prefix}unblock`)){
+    if(message.guild.member(message.author).roles.cache.has(config.roles.mod)){
+      var args = message.content.split(" ").slice(1);
+      client.users.fetch(`${args[0]}`).then(async user => {
+	const dbTable3 = new db.table("Support13");
+      	let data = await dbTable3.get(`blocked_${args[0]}`);
+        if(data === true){
+          await dbTable3.delete(`blocked_${args[0]}`);
+          return message.channel.send(`Successfully unblocked ${user.username} (${user.id}) from the modmail service.`);
+        } else {
+          return message.channel.send(`${user.username} (${user.id}) is not blocked from the modmail at the moment.`)
+        }
+      }).catch(err => {
+        if(err) return message.channel.send("Unknown user.");
+      })
+    } else {
+      return message.channel.send("You can not use that.");
+    }
+  }
 })
