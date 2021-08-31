@@ -20,7 +20,7 @@ client.once('ready', async () => {
 	console.log(`Logged in as ${client.user.tag}`);
 })
 
-client.login(config.token.bot);
+client.login(process.env.TOKEN); // if it can't, replace process.env.TOKEN with "TOKEN"
 
 client.on("messageCreate", async message => {
 	if(message.author.bot) return;
