@@ -13,6 +13,7 @@ const client = new Client({
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const config = require("./config.json");
+const { paste } = require("ubuntu-pastebin");
 const db = require("quick.db");
 
 client.once('ready', async () => {
@@ -105,9 +106,21 @@ client.on("messageCreate", async message => {
 		return;
 	};
 	if(message.content === `${config.prefix}c` || message.content === `${config.prefix}complete`){
+		let text = `Ticket #${activeuser.ticket}\n\nAuthor: ${user.username}#${user.discriminator} (${user.id})\n\n`;
+		let mmap = message.channel.messages.cache.map(m => {
+			text += `From ${m.author.username} - ID: ${m.id}\n${m.content}\n\n`
+		});
+		paste(text).then(url => {
+			const newTicketLog = new MessageEmbed()
+				.setAuthor(user.tag, user.avatarURL())
+				.setDescription(`closed ticket #${activeuser.ticket}.\n[Thread](${url})`)
+				.setTimestamp()
+				.setColor("0x666666")
+				.setFooter(`Author ID: ${user.id}`)
+			await client.channels.fetch(config.log).send({embeds: [newTicketLog]});
+			await user.send({content: `Thanks for getting in touch! If you wish to open a new ticket, feel free to DM me.\n\nHere's the link to the thread: ${url}`})
+		});
 		await table.delete(`channel_${message.channel.id}`);
 		await table.delete(`support_${activechannel.author}`);
-		await user.send({content: "Hi! Your ticket has been closed.\n\nFeel free to DM me whenever it is needed."})
-		message.channel.delete();
 	};
 })
