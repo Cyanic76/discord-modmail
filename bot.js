@@ -129,7 +129,7 @@ client.on("messageCreate", async message => {
 		let mmap = message.channel.messages.cache.map(m => {
 			text += `From ${m.author.username} - ID: ${m.id}\n${m.content}\n\n`
 		});
-		paste(text).then(url => {
+		paste(text).then(async url => {
 			const newTicketLog = new MessageEmbed()
 				.setAuthor(user.tag, user.avatarURL())
 				.setDescription(`closed ticket #${activeuser.ticket}.\n[Thread](${url})`)
