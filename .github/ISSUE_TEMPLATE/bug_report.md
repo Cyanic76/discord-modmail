@@ -15,8 +15,12 @@ assignees: ''
 **Error message**
 <!-- Provide the error message with the stack. -->
 
-**To Reproduce**
+**Steps To Reproduce**
 <!-- Steps to reproduce the behavior -->
+1.
+2.
+3.
+4.
 
 **Expected behavior**
 <!-- A clear and concise description of what you expected to happen. -->
@@ -24,8 +28,10 @@ assignees: ''
 **Screenshots**
 <!-- If applicable, add screenshots to help explain your problem. -->
 
-**Host**
-<!-- Provide the name of your host. -->
+**System info**
+- Host: <!-- GitHub, Heroku, Glitch, Replit, I host it on my own... -->
+- *discord.js* version:
+- *node* version:
 
 **Additional context**
 <!-- Add any other context about the problem here. -->
