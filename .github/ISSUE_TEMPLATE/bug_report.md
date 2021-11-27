@@ -7,11 +7,13 @@ assignees: ''
 
 ---
 
+<!-- Screenshots and additional context are not necessary. -->
+
 **Describe the bug**
 <!-- A clear and concise description of what the bug is. -->
 
 **Error message**
-<!-- Provide an error message if possible. -->
+<!-- Provide the error message with the stack. -->
 
 **To Reproduce**
 <!-- Steps to reproduce the behavior -->
