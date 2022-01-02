@@ -24,6 +24,7 @@ client.login(process.env.TOKEN); // if it can't, replace process.env.TOKEN with 
 
 client.on("messageCreate", async message => {
 	if(message.author.bot) return;
+	if(message.guild.member(message.author).pending) return message.author.send("You still have to pass the guild's membership gate to use the modmail.")
 	if(message.content.includes("@everyone") || message.content.includes("@here")) return message.author.send({content: "You're not allowed to use those mentions."});
 	// Used a new table so it doesn't get messed up with the old one
 	const table = new db.table("Support13");
