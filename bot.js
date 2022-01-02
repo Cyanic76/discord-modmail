@@ -24,15 +24,17 @@ client.login(process.env.TOKEN); // if it can't, replace process.env.TOKEN with 
 
 client.on("messageCreate", async message => {
 	if(message.author.bot) return;
-	if(message.content.includes("@everyone") || message.content.includes("@here")) return message.author.send({content: "You're not allowed to use those mentions."});
+	if(message.guild.member(message.author).communicationDisabledUntilTimestamp !== null) return message.author.send("Hey!\nLooks like you're on timeout. You can't use the modmail while on timeout.")
+	if(message.guild.member(message.author).pending) return message.author.send("Hey!\nYou still have to pass the guild's membership gate to use the modmail.")
+	if(message.content.includes("@everyone") || message.content.includes("@here")) return message.author.send("You're not allowed to use those mentions.");
 	// Used a new table so it doesn't get messed up with the old one
 	const table = new db.table("Support13");
 	if(message.channel.type === "DM"){
 		let active = await table.get(`support_${message.author.id}`);
 		let block = await table.get(`blocked_${message.author.id}`);
 		let hold = await table.get(`hold_${message.author.id}`);
-		if(config.dmUsers === false) return message.author.send("Hey! Sorry, but the modmail is currently closed.")
-		if(block === true) return message.author.send("You are not allowed to use modmail.");
+		if(config.dmUsers === false) return message.author.send("Hey!\nSorry, but the modmail is currently closed. If you already have an open ticket, it will be kept open.")
+		if(block === true) return message.author.send("You are not allowed to use the modmail.");
 		if(hold === true) return message.author.send("The support team put your ticket on hold. Please wait until they get back to you.")
 		let guild = await client.guilds.fetch(config.guild);
 		let tc = await guild.channels.fetch(config.ticketCategory);
@@ -96,6 +98,7 @@ client.on("messageCreate", async message => {
 	let onHold = await table.get(`hold_${activechannel.author}`);
 	if(message.content.startsWith(`-r`) || message.content.startsWith(`-reply`)){
 		if(blocked === true) return message.channel.send({content: "This user is blocked."});
+		if(message.guild.member(user).communicationDisabledUntilTimestamp !== null) return message.author.send("This user is on timeout.")
 		await user.send(`${message.author.username}: ${pending}`);
 		return;
 	};
