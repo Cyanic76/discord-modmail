@@ -98,6 +98,7 @@ client.on("messageCreate", async message => {
 	let onHold = await table.get(`hold_${activechannel.author}`);
 	if(message.content.startsWith(`-r`) || message.content.startsWith(`-reply`)){
 		if(blocked === true) return message.channel.send({content: "This user is blocked."});
+		if(message.guild.member(user).communicationDisabledUntilTimestamp !== null) return message.author.send("This user is on timeout.")
 		await user.send(`${message.author.username}: ${pending}`);
 		return;
 	};
