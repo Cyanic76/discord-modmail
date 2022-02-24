@@ -6,6 +6,6 @@ updates:
     schedule:
       interval: "daily"
     commit-message:
-      prefix: "Bumped 1 package: "
+      prefix: "dep: "
     labels:
       - "npm"
