@@ -7,7 +7,7 @@
     "start": "node bot.js"
   },
   "dependencies": {
-    "express": "^4.17.2",
+    "express": "^4.17.3",
     "discord.js": "^13.6.0",
     "quick.db": "^7.1.3",
     "ubuntu-pastebin": "^1.0.1"
