@@ -9,7 +9,8 @@ const userSchema = new Schema({
 })
 
 const channelSchema = new Schema({
-  author: {type: Number, required: true}
+  author: {type: Number, required: true},
+  channel: {type: Number, required: true}
 })
 
 const ticketSchema = new Schema({
