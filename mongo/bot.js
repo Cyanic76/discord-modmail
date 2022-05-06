@@ -99,7 +99,7 @@ client.on("messageCreate", async message => {
 			message.author.send(`Hello! Thanks for getting in touch. Our support team will get back to you quickly.`);
 			let supportData = new User({ticket: ticket.number, target: author.id ,channel: channel.id});
 			await supportData.save();
-            let channelData = new Channel({author: author.id});
+            let channelData = new Channel({channel: channel.id, author: author.id});
             await channelData.save();
 			let text = message.content;
 			await channel.send({content: `${message.author.username} opened this ticket.`})
@@ -111,4 +111,6 @@ client.on("messageCreate", async message => {
 		channel.send({content: message.content});
         
     }
+	let activechannel = await Channel.findOne({channel: channel.id});
+	if(activechannel === null || !activechannel) return;
 });
