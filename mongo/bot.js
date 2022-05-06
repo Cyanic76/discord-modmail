@@ -62,8 +62,53 @@ client.on("messageCreate", async message => {
             } else {
                 let ticketDB = new Ticket({number: 1});
             }
+	
+	    	// Create the channel
+	    	channel = await guild.channels.create(`${message.author.username}`, {
+				type: "GUILD_TEXT",
+				topic: `#${ticket} | From ${message.author.username}`,
+				parent: tc,
+				reason: `${message.author.id} opened a ticket through the modmail service.`,
+				permissionOverwrites: [
+					{id: guild.roles.everyone, deny: [Permissions.FLAGS.VIEW_CHANNEL]},
+					{id: guild.roles.fetch(config.roles.mod), allow: [
+						Permissions.FLAGS.VIEW_CHANNEL,
+						Permissions.FLAGS.SEND_MESSAGES,
+						Permissions.FLAGS.EMBED_LINKS,
+						Permissions.FLAGS.READ_MESSAGE_HISTORY
+					]},
+                    {id: guild.roles.fetch(config.roles.bot), allow: [
+						Permissions.FLAGS.VIEW_CHANNEL,
+                        Permissions.FLAGS.SEND_MESSAGES,
+						Permissions.FLAGS.ATTACH_FILES,
+						Permissions.FLAGS.EMBED_LINKS,
+						Permissions.FLAGS.READ_MESSAGE_HISTORY
+        			]}
+      			]
+			});
+			
+			// Send the new ticket embed
+			let author = message.author;
+			const log_newTicket = new MessageEmbed()
+				.setAuthor(author.tag, author.avatarURL())
+				.setDescription(`opened ticket #${ticket}.`)
+				.setTimestamp()
+				.setColor("0x6666ff")
+			let logs = await client.channels.fetch(config.log)
+			logs.send({embeds: [log_newTicket]});
+			message.author.send(`Hello! Thanks for getting in touch. Our support team will get back to you quickly.`);
+			let supportData = new User({ticket: ticket.number, target: author.id ,channel: channel.id});
+			await supportData.save();
+            let channelData = new Channel({author: author.id});
+            await channelData.save();
+			let text = message.content;
+			await channel.send({content: `${message.author.username} opened this ticket.`})
+			await channel.send({content: text}); // Send plain text
+			return;
             
-        }
+        };
+		channel = guild.channels.cache.get(active.channel);
+		channel.send({content: message.content});
         
     }
 });
