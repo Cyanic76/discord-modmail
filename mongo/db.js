@@ -4,6 +4,8 @@ const userSchema = new Schema({
   ticket: {type: Number, required: true},
   target: {type: Number, required: true},
   channel: {type: Number, required: true},
+  blocked: {type: Boolean, required: false, default: false},
+  onHold: {type: Boolean, required: false, default: false}
 })
 
 const channelSchema = new Schema({
