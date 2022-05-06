@@ -111,6 +111,78 @@ client.on("messageCreate", async message => {
 		channel.send({content: message.content});
         
     }
-	let activechannel = await Channel.findOne({channel: channel.id});
+	
+	// Support team side
+	let activechannel = await Channel.findOne({channel: message.channel.id});
 	if(activechannel === null || !activechannel) return;
+	let activeuser = await User.findOne({target: activechannel.author});
+	let discordUser = await client.users.fetch(activechannel.author);
+	let text = message.content;
+	let args = text.split(" ").slice(1);
+	let pending = args.join(" ");
+	let blocked = activeuser.blocked;
+	let onHold = activeuser.onHold;
+	
+	// Reply
+	if(text.startsWith(`${config.prefix}r`) || text.startsWith(`${config.prefix}reply`)){
+		if(blocked === true) return message.channel.send({content: "This user is blocked."});
+		if(message.guild.member(discordUser).communicationDisabledUntilTimestamp !== null) return message.author.send("This user is on timeout.")
+		await discordUser.send(`${message.author.username}: ${pending}`);
+		return;
+	}
+	
+	// Show UID
+	if(text === `${config.prefix}id`){
+		return message.channel.send({content: `Ticket owner's ID is **${activechannel.author}**.`});
+	}
+	
+	// Put on hold
+	if(text === `${config.prefix}p` || text === `${config.prefix}hold`){
+		if(blocked === true) return message.channel.send({content: "This user is blocked."});
+		if(onHold === true) return message.channel.send({content: "This thread is already on hold."});
+		activeuser.onHold = true;
+		await activeuser.save();
+		message.channel.send(`This thread has been put on hold.`);
+		await discordUser.send(`Hi! Your ticket has been put on hold.`);
+        return;
+	}
+	
+	// Cancel on hold
+	if(text === `${config.prefix}up` || text === `${config.prefix}continue`){
+		if(onHold === true) return message.channel.send({content: "This thread is not on hold."});
+		if(blocked === true) return message.channel.send({content: "This user is blocked."});          
+		activeuser.onHold = false;
+		await activeuser.save();
+		message.channel.send(`This thread isn't on hold anymore.`);
+		await discordUser.send(`Hi! Your ticket isn't on hold anymore.`);
+		return;
+	}
+	
+	// Block a user
+	if(message.content === `${config.prefix}b` || message.content === `${config.prefix}block`){
+		activeuser.block = true;
+		await activeuser.save();
+		message.channel.send(`This user has been blocked from modmail.`);
+		await discordUser.send(`You can't use the modmail until further notice.`)
+		return;
+	}
+	
+	// Close
+	if(message.content === `${config.prefix}c` || message.content === `${config.prefix}close`){
+		let text = `Ticket #${activeuser.ticket}\n\nAuthor: ${discordUser.username}#${discordUser.discriminator} (${discordUser.id})\n\n`;
+		let mmap = message.channel.messages.cache.map(m => {
+			text += `From ${m.author.username} - ID: ${m.id}\n${m.content}\n\n`
+		});
+        paste(text).then(async url => {
+			const log_deletedTicket = new MessageEmbed()
+				.setAuthor(discordUser.tag, discordUser.avatarURL())
+				.setDescription(`closed ticket #${activeuser.ticket}.\n[Thread](${url})`)
+				.setTimestamp()
+				.setColor("0x666666")
+				.setFooter(`ID: ${discordUser.id}`)
+			await client.channels.fetch(config.log).send({embeds: [log_deletedTicket]});
+			await user.send({content: `Thanks for getting in touch! If you wish to open a new ticket, feel free to DM me.\n\nHere's the link to the thread: ${url}`})
+		})
+		// Should remove data here
+	}
 });
