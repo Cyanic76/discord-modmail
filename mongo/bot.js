@@ -11,8 +11,9 @@ const client = new Client({
 }) // not sure about intents, though
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
-const config = require("../config.json");
-const { paste } = require("ubuntu-pastebin");const { Client, Intents, Permissions, MessageEmbed } = require("discord.js");
+const config = require("../config.json"); // located at the root of the repo
+const { paste } = require("ubuntu-pastebin");
+const { Client, Intents, Permissions, MessageEmbed } = require("discord.js");
 const mongo = require("mongoose");
 const {User,Channel,Ticket} = require("./db.js");
 
