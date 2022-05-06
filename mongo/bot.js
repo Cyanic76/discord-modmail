@@ -186,3 +186,21 @@ client.on("messageCreate", async message => {
 		// Should remove data here
 	}
 });
+
+client.on("messageCreate", async message => {
+	if(message.content.startsWith(`${config.prefix}unblock`)){
+		if(message.guild.member(message.author).roles.cache.has(config.roles.mod)){
+			var args = message.content.split(" ").slice(1);
+			client.users.fetch(`${args[0]}`).then(async user => {
+				let dbUser = await User.findOne({target: user.id});
+				dbUser.blocked = false;
+				await dbUser.save();
+				return message.channel.send(`Unblocked ${user.username} (${user.id}).`);
+			}).catch(err => {
+				return message.channel.send("Unknown user. Did they leave the server?");
+			})
+		} else {
+			return message.channel.send("You can't use that.")
+		}
+	}
+})
