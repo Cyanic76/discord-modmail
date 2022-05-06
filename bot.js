@@ -124,7 +124,7 @@ client.on("messageCreate", async message => {
 	if(message.content === `${config.prefix}b` || message.content === `${config.prefix}block`){
 		await table.set(`blocked_${activechannel.author}`, true);
 		await user.send(`You can not use modmail until further notice.`)
-		message.channel.send(`This user has been blocked from modmail, and other forms of contribution.`);
+		message.channel.send(`Blocked the ticket author from the modmail.`);
 		return;
 	};
 	if(message.content === `${config.prefix}c` || message.content === `${config.prefix}complete`){
