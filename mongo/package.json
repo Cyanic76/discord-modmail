@@ -9,7 +9,7 @@
   "dependencies": {
     "express": "^4.18.1",
     "discord.js": "^13.8.0",
-    "mongoose": "^6.3.2",
+    "mongoose": "^6.3.8",
     "ubuntu-pastebin": "^1.0.1"
   },
   "engines": {
