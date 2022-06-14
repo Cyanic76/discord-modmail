@@ -14,7 +14,10 @@ const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const config = require("./config.json");
 const { paste } = require("ubuntu-pastebin");
-const db = require("quick.db");
+const { QuickDB } = require("quick.db");
+const db = new QuickDB();
+// If you store your db somewhere else:
+// const db = new QuickDB({ filePath: "/source/to/path/db.sqlite" })
 
 client.once('ready', async () => {
 	console.log(`Logged in as ${client.user.tag}`);
@@ -28,7 +31,7 @@ client.on("messageCreate", async message => {
 	if(message.guild.member(message.author).pending) return message.author.send("Hey!\nYou still have to pass the guild's membership gate to use the modmail.")
 	if(message.content.includes("@everyone") || message.content.includes("@here")) return message.author.send("You're not allowed to use those mentions.");
 	// Used a new table so it doesn't get messed up with the old one
-	const table = new db.table("Support13");
+	const table = db.table("Support13");
 	if(message.channel.type === "DM"){
 		let active = await table.get(`support_${message.author.id}`);
 		let block = await table.get(`blocked_${message.author.id}`);
