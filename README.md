@@ -1,3 +1,7 @@
+Moved to [Codeberg](https://codeberg.org/Plexify/discord-modmail). Use the [issue tracker](https://codeberg.org/Plexify/discord-modmail/issues) for issues.
+
+---
+
 # Discord.JS 13 Modmail
 
 A modmail with rich features using the latest discord.js version.
