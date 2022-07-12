@@ -1,4 +1,5 @@
-Moved to [Codeberg](https://codeberg.org/Plexify/discord-modmail). Use the [issue tracker](https://codeberg.org/Plexify/discord-modmail/issues) for issues.
+⚠️ Moved to [Codeberg](https://codeberg.org/Plexify/discord-modmail).
+Use the [issue tracker](https://codeberg.org/Plexify/discord-modmail/issues) for issues.
 
 ---
 
