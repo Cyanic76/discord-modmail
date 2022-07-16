@@ -101,10 +101,7 @@ client.on("messageCreate", async message => {
 		channel.send(`${message.author.username}: ${text}`);
 	}
 	let activechannel = await table.get(`channel_${message.channel.id}`);
-	if(activechannel === null){
-		message.channel.send("This channel isn't bound to a ticket.")
-		return;
-	};
+	if(activechannel === null) return; // Otherwise it's gonna spam all channels
 	const userID = activechannel;
 	let activeuser = await table.get(`support_${userID}`);
 	let user = await client.users.fetch(userID);
