@@ -6,7 +6,6 @@
 		"ticketCategory": "Your support server's TICKET category ID",
 		"server": "Your support server ID goes here"
 	},
-	"log": "Your modmail log channel ID",
 	"permissions": {
 		"disabledOnTimeout": true,
 		"notifyUserOnBlock": true
@@ -14,6 +13,7 @@
 	"prefix": "!",
 	"roles": {
 		"bot": "Your bot role ID",
-		"mod": ["Your moderator/support team role ID"]
-	}
+		"mod": "Your moderator/support team role ID"
+	},
+	"token": "Token go here"
 }

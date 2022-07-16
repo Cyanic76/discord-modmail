@@ -32,9 +32,10 @@ client.login(process.env.TOKEN);
 
 client.on("messageCreate", async message => {
 	if(message.author.bot) return;
-	if(message.guild.member(message.author).communicationDisabledUntilTimestamp !== null && config.permissions.disableOnTimeout === true) return message.author.send(strings.disableOnTimeout);
-	if(message.guild.member(message.author).pending) return message.author.send(strings.pending);
-	let text = string.replace(/[`]|@everyone|@here/g, '');
+	let guild = await client.guilds.fetch(config.id.server);
+	if(guild.members.fetch(message.author.id).communicationDisabledUntilTimestamp !== null && config.permissions.disableOnTimeout === true) return message.author.send(strings.disableOnTimeout);
+	if(guild.members.fetch(message.author.id).pending) return message.author.send(strings.pending);
+	let text = message.content.replace(/[`]|@everyone|@here/g, '');
 	// Use table from 1.1.9
 	const table = db.table("Support13")
 	
@@ -43,7 +44,6 @@ client.on("messageCreate", async message => {
 		let block = await table.get(`blocked_${message.author.id}`);
 		if(config.enabled === false) return message.author.send(strings.disabled);
 		if(block === true) return message.author.send(strings.blocked);
-		let guild = await client.guilds.fetch(config.id.server);
 		let ticketcategory = await guild.channels.fetch(config.id.ticketCategory);
 		let channel, found = true;
 		
@@ -53,26 +53,25 @@ client.on("messageCreate", async message => {
 			let ticket = await table.get("Tickets");
 			
 			channel = await guild.channels.create(`${message.author.username}`, {
-				type: "GUILD_TEXT",
 				topic: `#${ticket} | From ${message.author.username}`,
-				parent: tc,
+				parent: ticketcategory,
 				reason: `${message.author.id} opened a ticket through the modmail service.`,
 				permissionOverwrites: [
 					{id: guild.roles.everyone, deny: [Permissions.FLAGS.VIEW_CHANNEL]},
-					{id: guild.roles.fetch(config.roles.mod), allow: [
+					{id: guild.roles.resolve(config.roles.mod), allow: [
 						Permissions.FLAGS.VIEW_CHANNEL,
 						Permissions.FLAGS.SEND_MESSAGES,
 						Permissions.FLAGS.ATTACH_FILES,
 						Permissions.FLAGS.EMBED_LINKS,
 						Permissions.FLAGS.READ_MESSAGE_HISTORY
 					]},
-          {id: guild.roles.fetch(config.roles.bot), allow: [
-            Permissions.FLAGS.VIEW_CHANNEL,
-            Permissions.FLAGS.SEND_MESSAGES,
-            Permissions.FLAGS.ATTACH_FILES,
-            Permissions.FLAGS.EMBED_LINKS,
-            Permissions.FLAGS.READ_MESSAGE_HISTORY
-          ]}
+	        {id: guild.members.resolve(client.user.id), allow: [
+	          Permissions.FLAGS.VIEW_CHANNEL,
+	          Permissions.FLAGS.SEND_MESSAGES,
+	          Permissions.FLAGS.ATTACH_FILES,
+	          Permissions.FLAGS.EMBED_LINKS,
+	          Permissions.FLAGS.READ_MESSAGE_HISTORY
+	        ]}
 				]
 			});
 			
