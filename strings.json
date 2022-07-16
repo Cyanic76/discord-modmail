@@ -1,0 +1,13 @@
+{
+	"disableOnTimeout": "Hello! You are on timeout right now and the modmail is set up in a way that prevent users on timeout to use this service.",
+	"disabled": "Hello! I'm sorry, but the modmail is currently disabled.",
+	"nowBlocked": "Hi! The support team has decided to prevent you from using the modmail.",
+	"nowClosed": "Hi! Thanks for getting in touch. Your ticket has been closed by the support team. If you wish to open a new one, feel free to send a new message here.\nMessage log: {{URL}}",
+	"pending": "Hello! You must review the support server's guidelines and accept them first.",
+	"thread": {
+		"blocked": "The author of this thread has been blocked. You may want to unblock them (`unblock {user ID}`).",
+		"nowBlocked": "Successfully blocked the author of this thread.",
+		"timeout": "The author of this thread is on timeout and usage of modmail while on timeout is disabled."
+	},
+	"welcome": "Hi! Thanks for getting in touch with the support team. They will quickly get back to you."
+}

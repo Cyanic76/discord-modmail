@@ -1,12 +1,19 @@
 {
-	"guild": "Your support server ID goes here",
+	"deleteTicketOnLeave": false,
+	"enabled": false,
+	"id": {
+		"logchannel": "Your modmail log channel ID (will be ignored if none)",
+		"ticketCategory": "Your support server's TICKET category ID",
+		"server": "Your support server ID goes here"
+	},
 	"log": "Your modmail log channel ID",
+	"permissions": {
+		"disabledOnTimeout": true,
+		"notifyUserOnBlock": true
+	},
 	"prefix": "!",
 	"roles": {
 		"bot": "Your bot role ID",
 		"mod": ["Your moderator/support team role ID"]
-	},
-	"ticketCategory": "Your support server's TICKET category ID",
-	"dmUsers": false,
-	"deleteTicketOnLeave": false
+	}
 }
