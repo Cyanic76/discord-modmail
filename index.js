@@ -31,10 +31,11 @@ client.login(config.token);
 // client.login("PUT YOUR TOKEN HERE");
 
 client.on("messageCreate", async message => {
-	if(message.author.bot) return;
+	const author = message.author;
+	if(author.bot) return;
 	let guild = await client.guilds.fetch(config.id.server);
-	if(guild.members.fetch(message.author.id).communicationDisabledUntilTimestamp !== null && config.permissions.disableOnTimeout === true) return message.author.send(strings.disableOnTimeout);
-	if(guild.members.fetch(message.author.id).pending) return message.author.send(strings.pending);
+	if(guild.members.fetch(author.id).communicationDisabledUntilTimestamp !== null && config.permissions.disableOnTimeout === true) return message.author.send(strings.disableOnTimeout);
+	if(guild.members.fetch(author.id).pending) return message.author.send(strings.pending);
 	let text = message.content.replace(/[`]|@everyone|@here/g, '');
 	// Use table from 1.1.9
 	const table = db.table("Support13")
@@ -75,7 +76,6 @@ client.on("messageCreate", async message => {
 				]
 			});
 			
-			let author = message.author;
 			try {
 				const newTicketLog = new MessageEmbed()
 				.setAuthor(author.tag, author.avatarURL())
@@ -94,25 +94,30 @@ client.on("messageCreate", async message => {
 			await channel.send(`${author.username}: ${text}`);
 			
 		} // End of new ticket
+		let data = await table.get(`support_${author.id}`);
+    active.channel = data.channel;
+    active.targetID = data.target;
 		channel = guild.channels.cache.get(active.channel);
-		// TODO: Do something when channel doesn't exists or no permissions
 		channel.send(`${message.author.username}: ${text}`);
 	}
-	const author = message.author;
 	let activechannel = await table.get(`channel_${message.channel.id}`);
-	if(activechannel === null) return; // TODO: If no channel is binded, notify mods
-	const userID = activechannel.author;
+	if(activechannel === null){
+		message.channel.send("This channel isn't bound to a ticket.")
+		return;
+	};
+	const userID = activechannel;
 	let activeuser = await table.get(`support_${userID}`);
 	let user = await client.users.fetch(userID);
 	let args = text.split(" ").slice(1); // use "text" var here
 	let pending = args.join(" ");
 	let blocked = await table.get(`blocked_${userID}`);
 	const prefix = config.prefix;
+	let member = message.guild.members.fetch(user);
 	
 	// Reply
 	if(message.content.startsWith(`${prefix}r`) || message.content.startsWith(`${prefix}reply`)){
 		if(blocked) return message.channel.send(strings.thread.blocked)
-		if(message.guild.member(user).communicationDisabledUntilTimestamp !== null && config.permissions.disableOnTimeout === true) return message.channel.send(strings.thread.timeout);
+		if(member.communicationDisabledUntilTimestamp !== null && config.permissions.disableOnTimeout === true) return message.channel.send(strings.thread.timeout);
 		await user.send(`${author.username}: ${pending}`);
 		return;
 	}
@@ -124,23 +129,25 @@ client.on("messageCreate", async message => {
 	
 	// Block the user
 	if(message.content === `${prefix}block`){
-		await table.set(`blocked_${activechannel.author}`, true);
+		await table.set(`blocked_${userID}`, true);
 		if(config.permissions.notifyUserOnBlock) await user.send(strings.nowBlocked);
 		return message.channel.send(strings.thread.nowBlocked);
 	}
 	
 	// Close the ticket
+	// TODO: Fix the paste feature
 	if(message.content === `${prefix}close`){
 		let text = `Ticket #${activeuser.ticket}\n\nAuthor: ${user.tag} (${user.id})\n\n`;
 		let list = message.channel.messages.cache.map(m => {
 			text += `${m.author.tag} (message ${m.id})\n${m.content}\n\n`
 		})
-		paste(text).then(async url => {
+		//paste(text).then(async url => {
 			// Send log
 			try {
 				const oldTicketLog = new MessageEmbed()
 				.setAuthor(author.tag, author.avatarURL())
-				.setDescription(`Ticket ${ticket} closed\n[Message log](${url})`)
+				//.setDescription(`Ticket ${ticket} closed\n[Message log](${url})`)
+				.setDescription(`Ticket ${ticket} closed`)
 				.setTimestamp().setColor("0x666666")
 				let logs = await client.channels.fetch(config.id.logchannel); // set the log channel id here
 				logs.send({embeds: [oldTicketLog]});
@@ -148,8 +155,8 @@ client.on("messageCreate", async message => {
 				console.warn("Could not send log embed. Ignoring...");
 			}
 			// Notify user
-			await user.send(strings.nowClosed.replace("{{URL}}", url));
-		})
+			await user.send(strings.nowClosed.replace("{{URL}}", ""));
+		//})
 		await table.delete(`channel_${message.channel.id}`);
 		await table.delete(`support_${activechannel.author}`);
 	}
