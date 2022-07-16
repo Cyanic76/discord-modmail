@@ -26,7 +26,7 @@ client.once("ready", () => {
 })
 
 // Log in
-client.login(process.env.TOKEN);
+client.login(config.token);
 // If that doesn't work, uncomment & edit this:
 // client.login("PUT YOUR TOKEN HERE");
 
