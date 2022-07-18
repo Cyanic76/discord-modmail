@@ -8,7 +8,8 @@
 	},
 	"permissions": {
 		"disabledOnTimeout": true,
-		"notifyUserOnBlock": true
+		"notifyUserOnBlock": true,
+		"rawLogs": false
 	},
 	"prefix": "!",
 	"roles": {

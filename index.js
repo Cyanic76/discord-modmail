@@ -1,14 +1,13 @@
-const { Client, Intents, Permissions } = require("discord.js");
+const { Client, GatewayIntentBits, Partials, Permissions, EmbedBuilder } = require("discord.js");
 const client = new Client({
     intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MEMBERS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.DIRECT_MESSAGES,
-        Intents.FLAGS.DIRECT_MESSAGE_TYPING,
-        Intents.FLAGS.DIRECT_MESSAGE_REACTIONS
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.DirectMessageReactions
     ],
-    partials: ["CHANNEL"]
+    partials: [Partials.Channel]
 }) // not sure about intents, though
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
@@ -53,7 +52,8 @@ client.on("messageCreate", async message => {
 			await table.add("Tickets", 1);
 			let ticket = await table.get("Tickets");
 			
-			channel = await guild.channels.create(`${message.author.username}`, {
+			channel = await guild.channels.create({
+				name: `${message.author.username}`,
 				topic: `#${ticket} | From ${message.author.username}`,
 				parent: ticketcategory,
 				reason: `${message.author.id} opened a ticket through the modmail service.`,
@@ -77,14 +77,18 @@ client.on("messageCreate", async message => {
 			});
 			
 			try {
-				const newTicketLog = new MessageEmbed()
-				.setAuthor(author.tag, author.avatarURL())
-				.setDescription(`Ticket ${ticket} opened`)
-				.setTimestamp().setColor("0x6666ff")
-				let logs = await client.channels.fetch(config.id.logchannel); // set the log channel id here
-				logs.send({embeds: [newTicketLog]});
+				let logs = await client.channels.fetch(config.id.logchannel);
+				if(config.permissions.rawLogs){
+					const newTicketLog = new EmbedBuilder()
+					.setAuthor(author.tag, author.avatarURL())
+					.setDescription(`Ticket ${ticket} opened\nUser ID: ${author.id}`)
+					.setTimestamp().setColor("0x6666ff")
+					logs.send({embeds: [newTicketLog]});
+				} else {
+					logs.send(`#**${ticket}** | Opened by ${author.tag} (${author.id})`);
+				}
 			} catch(e) {
-				console.warn("Could not send log embed. Ignoring...");
+				console.warn("Could not send log message. Ignoring...");
 			}
 			
 			message.author.send(strings.welcome);
@@ -141,13 +145,17 @@ client.on("messageCreate", async message => {
 		//paste(text).then(async url => {
 			// Send log
 			try {
-				const oldTicketLog = new MessageEmbed()
-				.setAuthor(author.tag, author.avatarURL())
-				//.setDescription(`Ticket ${ticket} closed\n[Message log](${url})`)
-				.setDescription(`Ticket ${ticket} closed`)
-				.setTimestamp().setColor("0x666666")
-				let logs = await client.channels.fetch(config.id.logchannel); // set the log channel id here
-				logs.send({embeds: [oldTicketLog]});
+				let logs = await client.channels.fetch(config.id.logchannel);
+				if(config.permissions.rawLogs){
+					const oldTicketLog = new EmbedBuilder()
+					.setAuthor(author.tag, author.avatarURL())
+					.setDescription(`Ticket ${ticket} closed\nUser ID: ${author.id}`)
+					.setTimestamp().setColor("0x666666")
+					// [Message log](${url})
+					logs.send({embeds: [oldTicketLog]});
+				} else {
+					logs.send(`#**${ticket}** | Closed. Author was ${author.tag} (${author.id}).`);
+				}
 			} catch(e) {
 				console.warn("Could not send log embed. Ignoring...");
 			}
