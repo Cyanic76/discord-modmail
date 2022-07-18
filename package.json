@@ -1,6 +1,6 @@
 {
   "name": "discord-modmail",
-  "version": "1.2.0-dev1",
+  "version": "1.2.2",
   "description": "JavaScript modmail bot with rich features. (using quick.db & mongo)",
   "main": "bot.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "express": "^4.18.1",
-    "discord.js": "^13.8.1",
+    "discord.js": "^13.9.0",
     "quick.db": "^9.0.3",
     "ubuntu-pastebin": "^1.0.1"
   },
