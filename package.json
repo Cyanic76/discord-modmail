@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "better-sqlite3": "^7.6.2",
-    "discord.js": "^14.0.1",
+    "discord.js": "^14.0.3",
     "express": "^4.18.1",
     "quick.db": "^9.0.3",
     "ubuntu-pastebin": "^1.0.1"
