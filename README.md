@@ -4,9 +4,9 @@ A modmail with rich features using the latest discord.js version.
 
 ## Links
 
-- [Get the modmail up & running](https://codeberg.org/Cyanic76/discord-modmail/wiki/Installation)
-- [Host the modmail on repl.it](https://codeberg.org/Cyanic76/discord-modmail/wiki/Installation#replit-users) (no support yet)
-- [Errors & fixes](https://codeberg.org/Cyanic76/discord-modmail/wiki/Errors)
+- [Get the modmail up & running](https://cyanic76.gitbook.io/modmail.js/installation/install)
+- [Host the modmail on repl.it](https://cyanic76.gitbook.io/modmail.js/hosts/repl.it)
+- [Errors & fixes](https://cyanic76.gitbook.io/modmail.js/more/errors-and-fixes)
 
 ---
 
