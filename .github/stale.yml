@@ -1,9 +1,0 @@
-# If an issue with the label "First Issue" is marked as stale, that label and any others will be removed.
-
-daysUntilStale: 14
-daysUntilClose: 3
-staleLabel: stale
-markComment: >
-  This issue was marked as stale because it had no activity during the past 2 weeks. If this issue keeps being inactive, it will get closed in 3 days. Thanks for your contributions!
-closeComment: >
-  This issue was closed due to inactivity. Thanks for your contributions!
